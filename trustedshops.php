@@ -20,8 +20,8 @@
 if (!defined('_PS_VERSION_'))
 	exit;
 
-require(_PS_MODULE_DIR_.'trustedshops/lib/AbsTrustedShops.php');
-require(_PS_MODULE_DIR_.'trustedshops/lib/TSCommon.php');
+require(_PS_MODULE_DIR_.'trustedshops/classes/AbsTrustedShops.php');
+require(_PS_MODULE_DIR_.'trustedshops/classes/TSCommon.php');
 
 class TrustedShops extends Module
 {
@@ -47,7 +47,7 @@ class TrustedShops extends Module
 	{
 		$this->name = 'trustedshops';
 		$this->tab = 'payment_security';
-		$this->version = '2.2.2';
+		$this->version = '2.2.3';
 		$this->author = 'silbersaiten';
 		$this->bootstrap = true;
 
@@ -55,7 +55,7 @@ class TrustedShops extends Module
 
 		TSCommon::setTranslationObject($this);
 		self::$obj_ts_common = new TSCommon();
-		self::$obj_ts_common->_setEnvApi(TSCommon::ENV_MOD);
+		self::$obj_ts_common->setEnvApi(TSCommon::ENV_MOD);
 		self::$obj_ts_common->setModuleName($this->name);
 		self::$obj_ts_common->setSmarty($this->context->smarty);
 

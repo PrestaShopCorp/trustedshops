@@ -67,14 +67,16 @@ abstract class AbsTrustedShops
 		self::$translation_object = $object;
 	}
 
-	protected function _makeFormAction($uri, $id_tab)
+	protected function makeFormAction($uri, $id_tab)
 	{
 		$arr_query_new = array();
 		$uri_component = parse_url($uri);
 		$arr_query = explode('&', $uri_component['query']);
 
-		foreach ($arr_query as $value) {
+		foreach ($arr_query as $value)
+		{
 			$arr = explode('=', $value);
+			
 			if ($arr[0] != 'certificate_delete' &&
 				$arr[0] != 'certificate_edit' &&
 				$arr[0] != 'certificate_options'
@@ -84,7 +86,7 @@ abstract class AbsTrustedShops
 
 		$arr_query_new['id_tab'] = $id_tab;
 
-		return str_replace($uri_component['query'], '', $uri) . http_build_query($arr_query_new);
+		return str_replace($uri_component['query'], '', $uri).http_build_query($arr_query_new);
 	}
 
 	/**
@@ -110,7 +112,8 @@ abstract class AbsTrustedShops
 	 */
 	public function l($string, $specific = false)
 	{
-		if ($specific === false) {
+		if ($specific === false)
+		{
 			$reflection_class = new ReflectionClass(get_class($this));
 			$specific = basename($reflection_class->getFileName(), '.php');
 		}
@@ -119,38 +122,42 @@ abstract class AbsTrustedShops
 			return self::$translation_object->l($string, $specific);
 	}
 
-	public function display($file, $template, $cacheId = NULL, $compileId = NULL)
+	public function display($file, $template, $cache_id = null, $compile_id = null)
 	{
-		global $smarty;
-
-		if (Configuration::get('PS_FORCE_SMARTY_2')) /* Keep a backward compatibility for Smarty v2 */ {
-			$previousTemplate = $smarty->currentTemplate;
-			$smarty->currentTemplate = substr(basename($template), 0, -4);
+		if (Configuration::get('PS_FORCE_SMARTY_2')) /* Keep a backward compatibility for Smarty v2 */
+		{
+			$previous_template = self::$smarty->currentTemplate;
+			self::$smarty->currentTemplate = Tools::substr(basename($template), 0, -4);
 		}
 
-		$smarty->assign('module_dir', __PS_BASE_URI__ . 'modules/' . basename($file, '.php') . '/');
+		self::$smarty->assign('module_dir', __PS_BASE_URI__.'modules/'.basename($file, '.php').'/');
 
-		if (($overloaded = self::_isTemplateOverloadedStatic(basename($file, '.php'), $template)) === NULL)
+		if (($overloaded = self::isTemplateOverloadedStatic(basename($file, '.php'), $template)) === null)
 			$result = Tools::displayError('No template found');
-		else {
-			$smarty->assign('module_template_dir', ($overloaded ? _THEME_DIR_ : __PS_BASE_URI__) . 'modules/' . basename($file, '.php') . '/');
-			$result = $smarty->fetch(($overloaded ? _PS_THEME_DIR_ . 'modules/' . basename($file, '.php') : _PS_MODULE_DIR_ . basename($file, '.php')) . '/' . $template, $cacheId, $compileId);
+		else
+		{
+			self::$smarty->assign('module_template_dir', ($overloaded ? _THEME_DIR_ : __PS_BASE_URI__).'modules/'.basename($file, '.php').'/');
+			$result = $smarty->fetch(
+				($overloaded ?
+					_PS_THEME_DIR_.'modules/'.basename($file, '.php') :
+					_PS_MODULE_DIR_.basename($file, '.php')).'/'.$template, $cache_id, $compile_id
+			);
 		}
 
 		if (Configuration::get('PS_FORCE_SMARTY_2')) /* Keep a backward compatibility for Smarty v2 */
-			$smarty->currentTemplate = $previousTemplate;
+			self::$smarty->currentTemplate = $previous_template;
 		return $result;
 	}
 
 	/**
 	 * Template management (display, overload, cache)
-	 * @see Module::_isTemplateOverloadedStatic()
+	 * @see Module::isTemplateOverloadedStatic()
 	 */
-	protected static function _isTemplateOverloadedStatic($moduleName, $template)
+	protected static function isTemplateOverloadedStatic($module_name, $template)
 	{
-		if (Tools::file_exists_cache(_PS_THEME_DIR_ . 'modules/' . $moduleName . '/' . $template))
+		if (Tools::file_exists_cache(_PS_THEME_DIR_.'modules/'.$module_name.'/'.$template))
 			return true;
-		else if (Tools::file_exists_cache(_PS_MODULE_DIR_ . $moduleName . '/' . $template))
+		else if (Tools::file_exists_cache(_PS_MODULE_DIR_.$module_name.'/'.$template))
 			return false;
 
 		return null;
