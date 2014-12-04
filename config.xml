@@ -10,5 +10,4 @@
 	<is_configurable>1</is_configurable>
 	<need_instance>1</need_instance>
 	<limited_countries></limited_countries>
-	<is_eu_compatible>0</is_eu_compatible>
 </module>

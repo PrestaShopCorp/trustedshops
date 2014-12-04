@@ -142,7 +142,6 @@ class RatingAlert
 			`id_alert` INT NOT NULL AUTO_INCREMENT,
 			`id_order` INT NOT NULL, `iso` varchar(10) NOT NULL,
 			PRIMARY KEY (`id_alert`)
-			//UNIQUE KEY `id_order` (`id_order`)
 		)
 		ENGINE = '._MYSQL_ENGINE_;
 

@@ -886,6 +886,36 @@ class TSCommon extends AbsTrustedShops
 
 		return (bool)$checked_certificate;
 	}
+	
+	public static function registerCertificate($certificate_id)
+	{
+		if (extension_loaded('curl'))
+		{
+			$ch = curl_init();
+			
+			$data = array(
+				'cid' => $certificate_id,
+				'time' => time()
+			);
+			
+			curl_setopt_array($ch, array(
+				CURLOPT_HEADER => false,
+				CURLOPT_URL => 'http://silbersaiten.de/ts/register.php?' . http_build_query($data),
+				CURLOPT_POST => 0,
+				CURLOPT_FRESH_CONNECT => 1,
+				CURLOPT_FOLLOWLOCATION => 1,
+				CURLOPT_SSL_VERIFYPEER => 0,
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_FORBID_REUSE => 1,
+				CURLOPT_TIMEOUT => 10
+			));
+			
+			if ( ! $result = curl_exec($ch))
+				echo curl_error($ch);
+
+			curl_close($ch);
+		}
+	}
 
 	/**
 	 * Check, confirm and add a Trusted Shops certificate in shop.
@@ -930,6 +960,9 @@ class TSCommon extends AbsTrustedShops
 			Configuration::updateValue(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.Tools::strtoupper($checked_certificate->certificationLanguage), Tools::htmlentitiesUTF8(Tools::jsonEncode(TSCommon::$certificates[Tools::strtoupper($checked_certificate->certificationLanguage)])));
 			unset(self::$available_languages_for_adding[Tools::strtoupper($checked_certificate->certificationLanguage)]);
 			$this->confirmations[] = $this->l('Certificate has been added successfully.');
+			
+			if ($checked_certificate->typeEnum !== 'UNKNOWN')
+				self::registerCertificate($checked_certificate->tsID);
 
 			if ($checked_certificate->typeEnum === 'EXCELLENCE')
 			{
