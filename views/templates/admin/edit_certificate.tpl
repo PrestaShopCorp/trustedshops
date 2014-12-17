@@ -63,54 +63,54 @@
 	    <div class="form-group">
 		<label class="control-label col-lg-3 required">{l s='Password' mod='trustedshops'}</label>
 		<div class="col-lg-4">
-		    <input type="text" name="password" value="{$certificate.password|escape:'html':'UTF-8'}" style="width:300px;"/></div>
+		    <input type="text" name="password" value="{$certificate.password|escape:'html':'UTF-8'}" style="width:300px;"/>
 		</div>
+	    </div>
 	    
-		<div id="payment-type" class="form-group">
-		    <label class="control-label col-lg-3 required">{l s='Payment type to edit' mod='trustedshops'}</label>
-		    <div class="col-lg-4">
-			<select name="payment_type">
-			    {foreach from=$payment_types item=translation key=type}
-				<option value="{$type|escape:'html':'UTF-8'}">{$translation|escape:'html':'UTF-8'}</option>
-			    {/foreach}
-			</select>
-			{l s='with' mod='trustedshops'}
-			<select name="payment_module">
-			    {foreach from=$payment_collection item=module_info}
-				<option value="{$module_info.id_module|escape:'intval':'UTF-8'}">{$module_info.name|escape:'html':'UTF-8'}</option>
-			    {/foreach}
-			</select>
-			{l s='payment module' mod='trustedshops'}
-			<input type="button" value="{l s='Add it' mod='trustedshops'}" class="btn btn-default" name="add_payment_module" />
-		    </div>
-		    
-		    <div id="payment_type_list" class="form-group">
-			{if isset($certificate.payment_type) && $certificate.payment_type|@count}
-			    {foreach from=$certificate.payment_type item=modules key=payment_type}
-				<label style="clear:both;" class="payment-type-label control-label col-lg-3" >{$payment_types[$payment_type]|escape:'html':'UTF-8'}</label>
-				<div class="col-lg-4" id="block-payment-{$payment_type|escape:'html':'UTF-8'}">
-				    {foreach from=$modules item=module_id}
-					<b class="payment-module-label" id="label-module-{$module_id|escape:'intval':'UTF-8'}"></b>
-				    {/foreach}
-				</div>
-			    {/foreach}
-			{/if}
-		    </div>
-		</div>
-		<p id="input-hidden-val" style="display:none;">
-		    {if isset($certificate.payment_type) && $certificate.payment_type|@count}
-			{foreach from=$certificate.payment_type item=modules key=payment_type}
-			    {foreach from=$modules item=module_id}
-				<input type="hidden" value="{$module_id|escape:'intval':'UTF-8'}" class="choosen_payment_type" name="choosen_payment_type[{$payment_type|escape:'html':'UTF-8'}][]">
-			    {/foreach}
+	    <div id="payment-type" class="form-group">
+		<label class="control-label col-lg-3 required">{l s='Payment type to edit' mod='trustedshops'}</label>
+		<div class="col-lg-4">
+		    <select name="payment_type">
+			{foreach from=$payment_types item=translation key=type}
+			    <option value="{$type|escape:'html':'UTF-8'}">{$translation|escape:'html':'UTF-8'}</option>
 			{/foreach}
-		    {/if}
-		</p>
-
-		<p style="text-align:center;">
-		    <input type="submit" name="submit_change_certificate" class="btn btn-default" value="{l s='Update it' mod='trustedshops'}"/>
-		</p>
+		    </select>
+		    {l s='with' mod='trustedshops'}
+		    <select name="payment_module">
+			{foreach from=$payment_collection item=module_info}
+			    <option value="{$module_info.id_module|escape:'intval':'UTF-8'}">{$module_info.name|escape:'html':'UTF-8'}</option>
+			{/foreach}
+		    </select>
+		    {l s='payment module' mod='trustedshops'}
+		    <input type="button" value="{l s='Add it' mod='trustedshops'}" class="btn btn-default" name="add_payment_module" />
+		</div>
+	    </div>
+	    
+	    <div id="payment_type_list" class="form-group">
+		{if isset($certificate.payment_type) && $certificate.payment_type|@count}
+		    {foreach from=$certificate.payment_type item=modules key=payment_type}
+			<label style="clear:both;" class="payment-type-label control-label col-lg-3" >{$payment_types[$payment_type]|escape:'html':'UTF-8'}</label>
+			<div class="col-lg-4" id="block-payment-{$payment_type|escape:'html':'UTF-8'}">
+			    {foreach from=$modules item=module_id}
+				<b class="payment-module-label" id="label-module-{$module_id|escape:'intval':'UTF-8'}"></b>
+			    {/foreach}
+			</div>
+		    {/foreach}
+		{/if}
 	    </div>
 	</div>
+	<p id="input-hidden-val" style="display:none;">
+	    {if isset($certificate.payment_type) && $certificate.payment_type|@count}
+		{foreach from=$certificate.payment_type item=modules key=payment_type}
+		    {foreach from=$modules item=module_id}
+			<input type="hidden" value="{$module_id|escape:'intval':'UTF-8'}" class="choosen_payment_type" name="choosen_payment_type[{$payment_type|escape:'html':'UTF-8'}][]">
+		    {/foreach}
+		{/foreach}
+	    {/if}
+	</p>
+
+	<p style="text-align:center;">
+	    <input type="submit" name="submit_change_certificate" class="btn btn-default" value="{l s='Update it' mod='trustedshops'}"/>
+	</p>
     </div>
 </form>

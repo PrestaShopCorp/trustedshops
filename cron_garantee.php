@@ -22,11 +22,11 @@ include(dirname(__FILE__).'/../../init.php');
 include(dirname(__FILE__).'/trustedshops.php');
 
 if (Tools::getIsset('secure_key') && (Tools::getValue('secure_key') != '') &&
-	Configuration::get(TSBuyerProtection::PREFIX_TABLE.'SECURE_KEY') == Tools::getValue('secure_key'))
+	Configuration::get(TSCommon::PREFIX_TABLE.'SECURE_KEY') == Tools::getValue('secure_key'))
 {
 	$ts_module = new TrustedShops();
-	TSBuyerProtection::setTranslationObject($ts_module);
-	$bp = new TSBuyerProtection();
+	TSCommon::setTranslationObject($ts_module);
+	$bp = new TSCommon();
 	$bp->setModuleName($ts_module->name);
 	$bp->cronTask();
 }
