@@ -137,7 +137,7 @@ abstract class AbsTrustedShops
 		else
 		{
 			self::$smarty->assign('module_template_dir', ($overloaded ? _THEME_DIR_ : __PS_BASE_URI__).'modules/'.basename($file, '.php').'/');
-			$result = $smarty->fetch(
+			$result = self::$smarty->fetch(
 				($overloaded ?
 					_PS_THEME_DIR_.'modules/'.basename($file, '.php') :
 					_PS_MODULE_DIR_.basename($file, '.php')).'/'.$template, $cache_id, $compile_id
