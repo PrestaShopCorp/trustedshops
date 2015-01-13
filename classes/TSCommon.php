@@ -59,6 +59,8 @@ class TSCommon extends AbsTrustedShops
 	);
 
 	private $error_soap_call;
+	
+	private static $template_version;
 
 	const PREFIX_TABLE = 'TS';
 	
@@ -163,6 +165,8 @@ class TSCommon extends AbsTrustedShops
 
 	public function __construct()
 	{
+		self::$template_version = version_compare(_PS_VERSION_, '1.6', '<') ? '1.5' : '1.6';
+		
 		// need to set this in constructor to allow translation
 		TSCommon::$payments_type = array(
 			'DIRECT_DEBIT' => $this->l('Direct debit'),
@@ -214,6 +218,14 @@ class TSCommon extends AbsTrustedShops
 				TSCommon::$env_api = Configuration::get(TSCommon::PREFIX_TABLE.'ENV_API');
 			}
 		}
+	}
+	
+	public static function getTemplateByVersion($template_name) {
+		if (self::$template_version == '1.5') {
+			return $template_name . '_1.5.tpl';
+		}
+		
+		return $template_name . '.tpl';
 	}
 
 	public function install()
@@ -1209,7 +1221,7 @@ class TSCommon extends AbsTrustedShops
 			'presentation' => TSCommon::$env_api
 		));
 
-		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/presentation.tpl');
+		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('presentation'));
 	}
 
 	private function displayFormRegistrationLink($link = false)
@@ -1224,7 +1236,7 @@ class TSCommon extends AbsTrustedShops
 			'link' => $link
 		));
 
-		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/form.tpl');
+		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('form'));
 	}
 
 	private function displayFormAddCertificate()
@@ -1235,7 +1247,7 @@ class TSCommon extends AbsTrustedShops
 			'lang_default' => Tools::getValue('lang'),
 		));
 		
-		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/add_certificate.tpl');
+		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('add_certificate'));
 	}
 
 	private function displayFormCertificatesList()
@@ -1246,7 +1258,7 @@ class TSCommon extends AbsTrustedShops
 			'configure_link' => $this->getLinkConfigureModule()
 		));
 		
-		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/certificate_list.tpl');
+		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('certificate_list'));
 	}
 
 	/**
@@ -1296,7 +1308,7 @@ class TSCommon extends AbsTrustedShops
 			'payment_collection_json' => Tools::jsonEncode($payment_module_collection)
 		));
 		
-		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/edit_certificate.tpl');
+		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('edit_certificate'));
 	}
 
 	private function displayFormOptionsCertificate($lang)
@@ -1313,7 +1325,7 @@ class TSCommon extends AbsTrustedShops
 			'cron_link' => self::getHttpHost(true, true)._MODULE_DIR_.self::$module_name.'/cron.php?secure_key='.Configuration::get(TSCommon::PREFIX_TABLE.'SECURE_KEY')
 		));
 		
-		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/options_certificate.tpl');
+		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('options_certificate'));
 	}
 
 	private function displayInfoCronTask()
@@ -1322,7 +1334,7 @@ class TSCommon extends AbsTrustedShops
 			'cron_path' => $this->getCronFilePath(),
 		));
 		
-		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/cron_list.tpl');
+		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('cron_list'));
 	}
 
 	public function hookRightColumn($params)
@@ -1449,7 +1461,7 @@ class TSCommon extends AbsTrustedShops
 			if (in_array($item['id_product'], $product_protection))
 				$params['cart']->deleteProduct($item['id_product']);
 
-		return $this->display(TSCommon::$module_name, '/views/templates/front/display_products.tpl');
+		return $this->display(TSCommon::$module_name, '/views/templates/front/'.self::getTemplateByVersion('display_products'));
 	}
 
 	/**
@@ -1599,7 +1611,7 @@ class TSCommon extends AbsTrustedShops
 			)
 		);
 
-		return $this->display(TSCommon::$module_name, '/views/templates/front/order-confirmation-tsbp-classic.tpl');
+		return $this->display(TSCommon::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation-tsbp-classic'));
 	}
 
 
@@ -1632,7 +1644,7 @@ class TSCommon extends AbsTrustedShops
 					'img_rateshoplater' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_later_'.Tools::strtolower($lang).'_190.png',
 				)
 			);
-			$out .= $this->display(self::$module_name, '/views/templates/front/order-confirmation.tpl');
+			$out .= $this->display(self::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation'));
 			$out .= $this->orderConfirmationExcellence($params, $lang);
 		}
 		else if ((isset(TSCommon::$certificates[$lang]['typeEnum'])) &&
@@ -1648,7 +1660,7 @@ class TSCommon extends AbsTrustedShops
 					'img_rateshoplater' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_later_'.Tools::strtolower($lang).'_190.png',
 				)
 			);
-			$out .= $this->display(self::$module_name, '/views/templates/front/order-confirmation.tpl');
+			$out .= $this->display(self::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation'));
 			$out .= $this->orderConfirmationClassic($params, $lang);
 		}
 		return $out;
@@ -1863,7 +1875,7 @@ class TSCommon extends AbsTrustedShops
 			self::$smarty->assign(array('rating_url' => $this->getRatenowUrl($iso_cert), 'language' => $iso_lang));
 
 		if (TSCommon::$certificates[Tools::strtoupper($iso_cert)])
-			return $this->display(self::$module_name, 'views/templates/front/widget.tpl');
+			return $this->display(self::$module_name, 'views/templates/front/'.self::getTemplateByVersion('widget'));
 
 		return '';
 	}

@@ -1,0 +1,34 @@
+.row {
+    clear: both;
+    overflow: hidden;
+    padding: 7px;
+}
+
+#content fieldset {
+    margin-bottom: 1em;
+}
+
+#content .hint {
+    background: #BDE5F8;
+    padding: 15px;
+}
+
+.ts_description {
+    float: left;
+    width: 75%;
+}
+
+.ts_logo {
+    float: left;
+    width: 25%;
+}
+
+.ts_rating_img {
+    float: left;
+    width: 34%;
+}
+
+.ts_rating_description {
+    float: left;
+    width: 66%;
+}

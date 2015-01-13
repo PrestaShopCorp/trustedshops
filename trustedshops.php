@@ -40,6 +40,8 @@ class TrustedShops extends Module
 	private $confirmations = array();
 
 	public static $seal_displayed = false;
+	
+	private static $template_version;
 
 	private $available_languages = array('en', 'fr', 'de', 'es', 'it', 'pl');
 
@@ -50,6 +52,8 @@ class TrustedShops extends Module
 		$this->version = '2.2.3';
 		$this->author = 'silbersaiten';
 		$this->bootstrap = true;
+		
+		self::$template_version = version_compare(_PS_VERSION_, '1.6', '<') ? '1.5' : '1.6';
 
 		parent::__construct();
 
@@ -79,6 +83,7 @@ class TrustedShops extends Module
 
 		$return = parent::install() &&
 			$this->registerHook('LeftColumn') &&
+			$this->registerHook('displayBackOfficeHeader') &&
 			$this->registerHook('orderConfirmation') &&
 			$this->registerHook('newOrder') &&
 			$this->registerHook('actionOrderStatusPostUpdate') &&
@@ -95,6 +100,14 @@ class TrustedShops extends Module
 	{
 		self::$obj_ts_common->uninstall();
 		return parent::uninstall();
+	}
+	
+	public static function getTemplateByVersion($template_name)
+	{
+		if (self::$template_version == '1.5')
+			return $template_name . '_1.5.tpl';
+		
+		return $template_name . '.tpl';
 	}
 
 	private function getAllowedIsobyId($id_lang)
@@ -131,7 +144,7 @@ class TrustedShops extends Module
 			'applynow_link' => $applynow_link
 		));
 
-		return $this->display(__FILE__, 'views/templates/admin/information.tpl');
+		return $this->display(__FILE__, 'views/templates/admin/'.self::getTemplateByVersion('information'));
 	}
 
 	public function displayConfiguration()
@@ -278,5 +291,12 @@ class TrustedShops extends Module
 			return Context::getContext()->smarty->fetch(dirname(__FILE__).'/views/templates/front/seal_of_approval.tpl');
 		}
 		return '';
+	}
+	
+	public function hookDisplayBackOfficeHeader($params)
+	{
+		if ($this->context->controller instanceof AdminModulesController && Tools::getValue('configure') == $this->name) {
+			$this->context->controller->addCSS($this->_path . 'css/admin.css');
+		}
 	}
 }
