@@ -288,7 +288,7 @@ class TrustedShops extends Module
 		{
 			Context::getContext()->smarty->assign('ts_module_dir', __PS_BASE_URI__.'modules/trustedshops/');
 			TrustedShops::$seal_displayed = true;
-			return Context::getContext()->smarty->fetch(dirname(__FILE__).'/views/templates/front/seal_of_approval.tpl');
+			return Context::getContext()->smarty->fetch(dirname(__FILE__).'/views/templates/front/'.TSCommon::getTemplateByVersion('seal_of_approval'));
 		}
 		return '';
 	}

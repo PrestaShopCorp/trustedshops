@@ -1822,12 +1822,15 @@ class TSCommon extends AbsTrustedShops
 	public function getRatingUrlWithBuyerEmail($id_lang, $iso_cert, $id_order = '', $buyer_email = '')
 	{
 		$language = Tools::strtoupper(Language::getIsoById((int)$id_lang));
-		$base_url = $this->rating_url_base[$language].TSCommon::$certificates[$iso_cert]['tsID'].'.html';
-
-		if (!empty($buyer_email))
-			$base_url .= '&buyerEmail='.urlencode(base64_encode($buyer_email)).($id_order ? '&shopOrderID='.urlencode(base64_encode((int)$id_order)) : '').'&orderDate='.urlencode(base64_encode(date('Y-m-d H:i:s')));
-
-		return $base_url;
+		
+		if (isset($this->rating_url_base[$language])) {
+			$base_url = $this->rating_url_base[$language].TSCommon::$certificates[$iso_cert]['tsID'].'.html';
+	
+			if (!empty($buyer_email))
+				$base_url .= '&buyerEmail='.urlencode(base64_encode($buyer_email)).($id_order ? '&shopOrderID='.urlencode(base64_encode((int)$id_order)) : '').'&orderDate='.urlencode(base64_encode(date('Y-m-d H:i:s')));
+	
+			return $base_url;
+		}
 	}
 
 	public function hookLeftColumn($params)

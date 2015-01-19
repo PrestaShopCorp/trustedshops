@@ -89,9 +89,9 @@
 	    </p>
 	</div>
 	    
+	{if isset($certificate.payment_type) && $certificate.payment_type|@count}
 	<label>{$payment_types[$payment_type]|escape:'html':'UTF-8'}</label>
 	<div id="payment_type_list" class="margin-form">
-	    {if isset($certificate.payment_type) && $certificate.payment_type|@count}
 		{foreach from=$certificate.payment_type item=modules key=payment_type}
 		    <div id="block-payment-{$payment_type|escape:'html':'UTF-8'}">
 			{foreach from=$modules item=module_id}
@@ -99,8 +99,8 @@
 			{/foreach}
 		    </div>
 		{/foreach}
-	    {/if}
 	</div>
+	{/if}
 
 	<p id="input-hidden-val" style="display:none;">
 	    {if isset($certificate.payment_type) && $certificate.payment_type|@count}
