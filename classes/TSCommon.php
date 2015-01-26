@@ -1823,7 +1823,7 @@ class TSCommon extends AbsTrustedShops
 	{
 		$language = Tools::strtoupper(Language::getIsoById((int)$id_lang));
 		
-		if (isset($this->rating_url_base[$language])) {
+		if (isset($this->rating_url_base[$language]) && isset(TSCommon::$certificates[$iso_cert])) {
 			$base_url = $this->rating_url_base[$language].TSCommon::$certificates[$iso_cert]['tsID'].'.html';
 	
 			if (!empty($buyer_email))
