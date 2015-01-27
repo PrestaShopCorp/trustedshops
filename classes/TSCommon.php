@@ -1513,8 +1513,7 @@ class TSCommon extends AbsTrustedShops
 		$arr_params['currency'] = $currency->iso_code;
 		$arr_params['buyerEmail'] = $customer->email;
 		$arr_params['shopCustomerID'] = $customer->id;
-		$arr_params['shopOrderID'] = $params['objOrder']->id;
-		$arr_params['shopOrderReference'] = Order::getUniqReferenceOf($params['objOrder']->id);		
+		$arr_params['shopOrderID'] = Order::getUniqReferenceOf($params['objOrder']->id);
 		$arr_params['orderDate'] = date('Y-m-d\TH:i:s', strtotime($params['objOrder']->date_add));
 		$arr_params['shopSystemVersion'] = 'Prestashop '._PS_VERSION_;
 		$arr_params['wsUser'] = TSCommon::$certificates[$lang]['user'];
