@@ -27,11 +27,11 @@
             function updateTsProduct(id_product, type_action) {
                 $.ajax({
                     type: 'POST',
-                    url: baseDir + 'cart.php',
+                    url: baseUri + '?rand=' + new Date().getTime(),
                     async: true,
                     cache: false,
                     dataType: "json",
-                    data: type_action + '=1&ajax=true&qty=1&id_product=' + id_product + '&token=' + static_token,
+                    data: 'controller=cart&' + type_action + '=1&ajax=true&qty=1&id_product=' + id_product + '&token=' + static_token,
                     success: function (jsonData) {
                         ajaxCart.updateCart(jsonData);
                         $('#total_price, #cart_block_total').html(jsonData.total);
@@ -57,10 +57,8 @@
             }
         })();
     </script>
-    <div style="border:solid 1px #000; width: 537px; border: 1px solid #595A5E; margin-bottom: 10px;">
-        <h3 style="padding:0 0 0 5px;"><b>{l s='Trusted Shops Buyer Protection (recommended)' mod='trustedshops'}</b>
-        </h3>
-
+    <div class="box">
+        <h3 class="page-subheading">{l s='Trusted Shops Buyer Protection (recommended)' mod='trustedshops'}</h3>
         <div style="float:left; width:100px;">
             <a href="https://www.trustedshops.com/shop/certificate.php?shop_id={$shop_id|escape}" target="_blank">
                 <img id="logo_trusted" style="margin:2px 0 10px 10px" alt="logo"
@@ -68,7 +66,7 @@
             </a>
         </div>
         <div id="ts-list-items">
-            <p>
+            <p style="margin-bottom: 10px;">
                 <input id="ts-product-{$buyer_protection_item.id_product|escape}" type="checkbox"
                        value="{$buyer_protection_item.id_product|escape}" name="item_product">
                 {l s='Buyer protection up to' mod='trustedshops'} {$buyer_protection_item.protected_amount_decimal|round:2}{$currency->sign}

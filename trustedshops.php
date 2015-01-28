@@ -89,6 +89,7 @@ class TrustedShops extends Module
 			$this->registerHook('actionOrderStatusPostUpdate') &&
 			$this->registerHook('Footer') &&
 			$this->registerHook('paymentTop') &&
+            //$this->registerHook('displayAfterShoppingCartBlock') &&
 			$this->registerHook('orderConfirmation');
 		$id_hook = _PS_VERSION_ < '1.5' ? Hook::get('payment') : Hook::getIdByName('payment');
 		$this->updatePosition($id_hook, 0, 1);
@@ -263,6 +264,11 @@ class TrustedShops extends Module
 	{
 		return $this->dynamicHook($params, __FUNCTION__);
 	}
+
+    public function hookDisplayAfterShoppingCartBlock($params)
+    {
+        return $this->dynamicHook($params, __FUNCTION__);
+    }
 
 	public function hookFooter($params)
 	{

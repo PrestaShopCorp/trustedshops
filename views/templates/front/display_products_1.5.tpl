@@ -27,11 +27,11 @@
             function updateTsProduct(id_product, type_action) {
                 $.ajax({
                     type: 'POST',
-                    url: baseDir + 'cart.php',
+                    url: baseUri + 'cart.php',
                     async: true,
                     cache: false,
                     dataType: "json",
-                    data: type_action + '=1&ajax=true&qty=1&id_product=' + id_product + '&token=' + static_token,
+                    data: '' + type_action + '=1&ajax=true&qty=1&id_product=' + id_product + '&token=' + static_token,
                     success: function (jsonData) {
                         ajaxCart.updateCart(jsonData);
                         $('#total_price, #cart_block_total').html(jsonData.total);
@@ -68,7 +68,7 @@
             </a>
         </div>
         <div id="ts-list-items">
-            <p>
+            <p style="margin-bottom: 10px;">
                 <input id="ts-product-{$buyer_protection_item.id_product|escape}" type="checkbox"
                        value="{$buyer_protection_item.id_product|escape}" name="item_product">
                 {l s='Buyer protection up to' mod='trustedshops'} {$buyer_protection_item.protected_amount_decimal|round:2}{$currency->sign}

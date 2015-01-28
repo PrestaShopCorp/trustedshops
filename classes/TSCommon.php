@@ -962,7 +962,7 @@ class TSCommon extends AbsTrustedShops
 				'password' => '',
 				'variant' => 'default',
 				'display_rating_front_end' => '1',
-				'display_rating_oc' => '1',
+				'display_rating_oc' => '0',
 				'send_separate_mail' => '0',
 				'send_seperate_mail_delay' => '0',
 				'send_seperate_mail_order_state' => Configuration::get('PS_OS_SHIPPING')
@@ -1387,9 +1387,15 @@ class TSCommon extends AbsTrustedShops
 	 * @param array $params
 	 * @return string tpl content
 	 */
+    public function hookDisplayAfterShoppingCartBlock($params)
+    {
+        return $this->hookPaymentTop($params);
+    }
+
 	public function hookPaymentTop($params)
 	{
 		$lang = Tools::strtoupper(Language::getIsoById($params['cookie']->id_lang));
+
 
 		if (!isset(TSCommon::$certificates[$lang]) ||
 			!isset(TSCommon::$certificates[$lang]['typeEnum'])
@@ -1403,6 +1409,7 @@ class TSCommon extends AbsTrustedShops
 		// If login parameters missing for the certificate an error occurred
 		if ((TSCommon::$certificates[$lang]['user'] == '' || TSCommon::$certificates[$lang]['password'] == '') && TSCommon::$certificates[$lang]['typeEnum'] == 'EXCELLENCE')
 			return '';
+
 
 		// Set default value for an unexisting item
 		TSCommon::$smarty->assign('item_exist', false);
@@ -1638,14 +1645,17 @@ class TSCommon extends AbsTrustedShops
 			TSCommon::$certificates[$lang]['user'] != '' &&
 			TSCommon::$certificates[$lang]['password'] != ''))
 		{
-			self::$smarty->assign(array(
-					'ratenow_url' => $this->getRatenowUrl($lang, (int)$params['objOrder']->id),
-					'ratelater_url' => $this->getRatelaterUrl($lang, (int)$params['objOrder']->id),
-					'img_rateshopnow' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_now_'.Tools::strtolower($lang).'_190.png',
-					'img_rateshoplater' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_later_'.Tools::strtolower($lang).'_190.png',
-				)
-			);
-			$out .= $this->display(self::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation'));
+            if (TSCommon::$certificates[$lang]['display_rating_oc'] == 1)
+            {
+                self::$smarty->assign(array(
+                        'ratenow_url' => $this->getRatenowUrl($lang, (int)$params['objOrder']->id),
+                        'ratelater_url' => $this->getRatelaterUrl($lang, (int)$params['objOrder']->id),
+                        'img_rateshopnow' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_now_'.Tools::strtolower($lang).'_190.png',
+                        'img_rateshoplater' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_later_'.Tools::strtolower($lang).'_190.png',
+                    )
+                );
+                $out .= $this->display(self::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation'));
+            }
 			$out .= $this->orderConfirmationExcellence($params, $lang);
 		}
 		else if ((isset(TSCommon::$certificates[$lang]['typeEnum'])) &&
@@ -1654,14 +1664,17 @@ class TSCommon extends AbsTrustedShops
 				TSCommon::$certificates[$lang]['stateEnum'] == 'PRODUCTION' ||
 				TSCommon::$certificates[$lang]['stateEnum'] == 'TEST'))
 		{
-			self::$smarty->assign(array(
-					'ratenow_url' => $this->getRatenowUrl($lang, (int)$params['objOrder']->id),
-					'ratelater_url' => $this->getRatelaterUrl($lang, (int)$params['objOrder']->id),
-					'img_rateshopnow' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_now_'.Tools::strtolower($lang).'_190.png',
-					'img_rateshoplater' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_later_'.Tools::strtolower($lang).'_190.png',
-				)
-			);
-			$out .= $this->display(self::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation'));
+            if (TSCommon::$certificates[$lang]['display_rating_oc'] == 1)
+            {
+                self::$smarty->assign(array(
+                        'ratenow_url' => $this->getRatenowUrl($lang, (int)$params['objOrder']->id),
+                        'ratelater_url' => $this->getRatelaterUrl($lang, (int)$params['objOrder']->id),
+                        'img_rateshopnow' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_now_'.Tools::strtolower($lang).'_190.png',
+                        'img_rateshoplater' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_later_'.Tools::strtolower($lang).'_190.png',
+                    )
+                );
+                $out .= $this->display(self::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation'));
+            }
 			$out .= $this->orderConfirmationClassic($params, $lang);
 		}
 		return $out;
@@ -1861,7 +1874,7 @@ class TSCommon extends AbsTrustedShops
 
 		self::$smarty->assign('display_widget', $display_in_shop);
 
-		if ($display_in_shop)
+		if ($display_in_shop && $display_rating_frontend)
 		{
 			$filename = $this->getWidgetFilename(Tools::strtoupper($iso_cert));
 			$cache = new WidgetCache(_PS_MODULE_DIR_.$filename, $tab_id);
