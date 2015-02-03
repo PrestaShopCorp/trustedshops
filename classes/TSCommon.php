@@ -1403,7 +1403,10 @@ class TSCommon extends AbsTrustedShops
 			return '';
 
 		// This hook is available only with EXCELLENCE certificate.
-		if (TSCommon::$certificates[$lang]['typeEnum'] == 'CLASSIC' || (TSCommon::$certificates[$lang]['stateEnum'] !== 'INTEGRATION' && TSCommon::$certificates[$lang]['stateEnum'] !== 'PRODUCTION' && TSCommon::$certificates[$lang]['stateEnum'] !== 'TEST'))
+		if (TSCommon::$certificates[$lang]['typeEnum'] == 'CLASSIC' || TSCommon::$certificates[$lang]['typeEnum'] == 'UNKNOWN' ||
+			(TSCommon::$certificates[$lang]['stateEnum'] !== 'INTEGRATION' &&
+				TSCommon::$certificates[$lang]['stateEnum'] !== 'PRODUCTION' &&
+				TSCommon::$certificates[$lang]['stateEnum'] !== 'TEST'))
 			return '';
 
 		// If login parameters missing for the certificate an error occurred
@@ -1874,7 +1877,7 @@ class TSCommon extends AbsTrustedShops
 
 		self::$smarty->assign('display_widget', $display_in_shop);
 
-		if ($display_in_shop && $display_rating_frontend)
+		if ($display_in_shop)
 		{
 			$filename = $this->getWidgetFilename(Tools::strtoupper($iso_cert));
 			$cache = new WidgetCache(_PS_MODULE_DIR_.$filename, $tab_id);
