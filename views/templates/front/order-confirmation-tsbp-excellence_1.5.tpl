@@ -29,7 +29,7 @@
 <div class="trustedshops-form" style="text-align:center;border:0px solid #ccc;padding:0px;height:0px;">
     <div id="trustedShopsCheckout" style="display: none;">
         <span id="tsCheckoutOrderNr">{$buyer_protection.order_reference|escape}</span>
-        <span id="tsCheckoutBuyerEmail">{$buyer_protection.buyer_email|escape}</span>
+        <span id="tsCheckoutBuyerEmail">{$buyer_protection.buyerEmail|escape}</span>
         <span id="tsCheckoutBuyerId">{$buyer_protection.customer_id|escape}</span>
         <span id="tsCheckoutOrderAmount">{$buyer_protection.amount|escape}</span>
         <span id="tsCheckoutOrderCurrency">{$buyer_protection.currency|escape}</span>

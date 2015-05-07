@@ -1535,6 +1535,12 @@ class TSCommon extends AbsTrustedShops
 		if (!empty($this->errors))
 			return '<p style="color:red">'.implode('<br />', $this->errors).'</p>';
 
+		TSCommon::$smarty->assign(
+			array(
+				'buyer_protection' => $arr_params
+			)
+		);
+
 		return $this->display(TSCommon::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation-tsbp-excellence'));
 	}
 
