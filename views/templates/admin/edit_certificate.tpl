@@ -18,8 +18,8 @@
 <script type="text/javascript" src="{$site_uri|escape:'html':'UTF-8'}modules/trustedshops/js/payment.js" ></script>
 <script type="text/javascript">
     $().ready(function() {
-	TSPayment.payment_type = $.parseJSON('{$payment_types_json|escape:'html':'UTF-8'}');
-	TSPayment.payment_module = $.parseJSON('{$payment_collection_json|escape:'html':'UTF-8'}');
+	TSPayment.payment_type = $.parseJSON('{$payment_types_json|escape:'UTF-8'}');
+	TSPayment.payment_module = $.parseJSON('{$payment_collection_json|escape:'UTF-8'}');
 	
 	{literal}
 	$('.payment-module-label').css(TSPayment.module_box.css).fadeIn();
@@ -34,7 +34,7 @@
 </script>
 <form action="{$form_action|escape:'html':'UTF-8'}" class="form-horizontal" method="post" >
     <div class="panel">
-	<div class="panel-heading">{l s='Edit certificate' mod='trustedshops'}</div>
+	<div class="panel-heading">{l s='Edit Trusted Shops ID' mod='trustedshops'}</div>
 	<div class="form-wrapper">
 	    <input type="hidden" name="iso_lang" value="{$lang|escape:'html':'UTF-8'}" />
 	    
@@ -49,7 +49,7 @@
 	    </div>
 	    
 	    <div class="form-group">
-                <label class="control-label col-lg-3">{l s='Certificate id' mod='trustedshops'}</label>
+                <label class="control-label col-lg-3">{l s='Trusted Shops ID' mod='trustedshops'}</label>
 		<div class="col-lg-4">{$certificate.tsID|escape:'html':'UTF-8'}</div>
 	    </div>
 	    

@@ -29,12 +29,12 @@
 
 <form action="{$form_action|escape:'html':'UTF-8'}" class="form-horizontal" method="post" >
     <fieldset>
-	<legend>{l s='Manage Trusted Shops certificates' mod='trustedshops'}</legend>
+	<legend>{l s='Manage your Trusted Shops review profiles' mod='trustedshops'}</legend>
 	
 	<table width="100%" class="table std">
 	    <thead>
 		<tr style="text-align:center;">
-		    <th>{l s='Certificate' mod='trustedshops'}</th>
+		    <th>{l s='Trusted Shops ID' mod='trustedshops'}</th>
 		    <th>{l s='Language' mod='trustedshops'}</th>
 		    <th>{l s='State' mod='trustedshops'}</th>
 		    <th>{l s='Type' mod='trustedshops'}</th>
@@ -68,7 +68,7 @@
 				</td>
 				<td>
 				    {if $certificate.typeEnum == 'EXCELLENCE' || $certificate.typeEnum == 'CLASSIC' || $certificate.typeEnum == 'UNKNOWN'}
-					<a href="{$configure_link|escape:'html':'UTF-8'}&certificate_options={$lang|escape:'html':'UTF-8'}" class="btn btn-default">{l s='Options' mod='trustedshops'}</a>
+					<a href="{$configure_link|escape:'html':'UTF-8'}&certificate_options={$lang|escape:'html':'UTF-8'}#certificate_list" class="btn btn-default">{l s='Options' mod='trustedshops'}</a>
 				    {else}
 					{l s='No need' mod='trustedshops'}
 				    {/if}

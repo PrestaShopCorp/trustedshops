@@ -32,7 +32,7 @@
         <span id="tsCheckoutBuyerEmail">{$buyer_protection.buyer_email|escape}</span>
         <span id="tsCheckoutBuyerId">{$buyer_protection.customer_id|escape}</span>
         <span id="tsCheckoutOrderAmount">{$buyer_protection.amount|escape}</span>
-        <span id="tsCheckoutOrderCurrency">{$buyer_protection.currency|escape}</span
+        <span id="tsCheckoutOrderCurrency">{$buyer_protection.currency|escape}</span>
         <span id="tsCheckoutOrderPaymentType">{$buyer_protection.payment_type|escape}</span>
         <span id="tsCheckoutOrderEstDeliveryDate"></span>
     </div>
