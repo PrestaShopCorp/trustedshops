@@ -177,6 +177,7 @@ class TSCommon extends AbsTrustedShops
 			'CHEQUE' => $this->l('Cheque'),
 			'PAYBOX' => $this->l('Paybox'),
 			'PAYPAL' => $this->l('PayPal'),
+			'AMAZON_PAYMENTS' => $this->l('Amazon payments'),
 			'CASH_ON_PICKUP' => $this->l('Cash on pickup'),
 			'FINANCING' => $this->l('Financing'),
 			'LEASING' => $this->l('Leasing'),
@@ -187,6 +188,9 @@ class TSCommon extends AbsTrustedShops
 			'SHOP_CARD' => $this->l('Online shop payment card'),
 			'DIRECT_E_BANKING' => $this->l('DIRECTebanking.com'),
 			'MONEYBOOKERS' => $this->l('moneybookers.com'),
+			'DOTPAY' => $this->l('Dotpay'),
+			'PLATNOSCI' => $this->l('Platnosci'),
+			'PRZELEWY24' => $this->l('Przelewy24'),
 			'OTHER' => $this->l('Other method of payment'),
 		);
 
@@ -1500,37 +1504,37 @@ class TSCommon extends AbsTrustedShops
 		AND `ts_id` ="'.pSQL(TSCommon::$certificates[$lang]['tsID']).'"
 		AND `currency` = "'.pSQL($currency->iso_code).'"';
 
-		if (!($item = Db::getInstance()->getRow($query)))
-			return '';
-
 		$customer = new Customer($params['objOrder']->id_customer);
-		$payment_module = Module::getInstanceByName($params['objOrder']->module);
-		$arr_params = array();
+			$payment_module = Module::getInstanceByName($params['objOrder']->module);
+			$arr_params = array();
 
-		$arr_params['paymentType'] = '';
-		foreach (TSCommon::$certificates[$lang]['payment_type'] as $payment_type => $id_modules)
-			if (in_array($payment_module->id, $id_modules))
-			{
-				$arr_params['paymentType'] = (string)$payment_type;
-				break;
-			}
+			$arr_params['paymentType'] = '';
+			foreach (TSCommon::$certificates[$lang]['payment_type'] as $payment_type => $id_modules)
+				if (in_array($payment_module->id, $id_modules))
+				{
+					$arr_params['paymentType'] = (string)$payment_type;
+					break;
+				}
 
-		if ($arr_params['paymentType'] == '')
-			$arr_params['paymentType'] = 'OTHER';
+			if ($arr_params['paymentType'] == '')
+				$arr_params['paymentType'] = 'OTHER';
 
-		$arr_params['tsID'] = TSCommon::$certificates[$lang]['tsID'];
-		$arr_params['tsProductID'] = $item['ts_product_id'];
-		$arr_params['amount'] = $params['total_to_pay'];
-		$arr_params['currency'] = $currency->iso_code;
-		$arr_params['buyerEmail'] = $customer->email;
-		$arr_params['shopCustomerID'] = $customer->id;
-		$arr_params['shopOrderID'] = Order::getUniqReferenceOf($params['objOrder']->id);
-		$arr_params['orderDate'] = date('Y-m-d\TH:i:s', strtotime($params['objOrder']->date_add));
-		$arr_params['shopSystemVersion'] = 'Prestashop '._PS_VERSION_;
-		$arr_params['wsUser'] = TSCommon::$certificates[$lang]['user'];
-		$arr_params['wsPassword'] = TSCommon::$certificates[$lang]['password'];
+			$arr_params['tsID'] = TSCommon::$certificates[$lang]['tsID'];
+			
+			$arr_params['amount'] = $params['total_to_pay'];
+			$arr_params['currency'] = $currency->iso_code;
+			$arr_params['buyerEmail'] = $customer->email;
+			$arr_params['shopCustomerID'] = $customer->id;
+			$arr_params['shopOrderID'] = Order::getUniqReferenceOf($params['objOrder']->id);
+			$arr_params['orderDate'] = date('Y-m-d\TH:i:s', strtotime($params['objOrder']->date_add));
+			$arr_params['shopSystemVersion'] = 'Prestashop '._PS_VERSION_;
+			$arr_params['wsUser'] = TSCommon::$certificates[$lang]['user'];
+			$arr_params['wsPassword'] = TSCommon::$certificates[$lang]['password'];
 
-		$this->requestForProtectionV2($arr_params);
+		if (($item = Db::getInstance()->getRow($query))) {			
+			$arr_params['tsProductID'] = $item['ts_product_id'];
+			$this->requestForProtectionV2($arr_params);
+		}		
 
 		if (!empty($this->errors))
 			return '<p style="color:red">'.implode('<br />', $this->errors).'</p>';

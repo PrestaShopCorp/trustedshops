@@ -28,13 +28,18 @@
 </style>
 <div class="trustedshops-form" style="text-align:center;border:0px solid #ccc;padding:0px;height:0px;">
     <div id="trustedShopsCheckout" style="display: none;">
-        <span id="tsCheckoutOrderNr">{$buyer_protection.order_reference|escape}</span>
+        <span id="tsCheckoutTsID">{$buyer_protection.tsID|escape}</span>
+        <span id="tsCheckoutTsProductID">{$buyer_protection.tsProductID|escape}</span>
+        <span id="tsCheckoutAmount">{$buyer_protection.amount|escape}</span>
+        <span id="tsCheckoutCurrency">{$buyer_protection.currency|escape}</span>
+        <span id="tsCheckoutPaymentType">{$buyer_protection.paymentType|escape}</span>
         <span id="tsCheckoutBuyerEmail">{$buyer_protection.buyerEmail|escape}</span>
-        <span id="tsCheckoutBuyerId">{$buyer_protection.customer_id|escape}</span>
-        <span id="tsCheckoutOrderAmount">{$buyer_protection.amount|escape}</span>
-        <span id="tsCheckoutOrderCurrency">{$buyer_protection.currency|escape}</span>
-        <span id="tsCheckoutOrderPaymentType">{$buyer_protection.payment_type|escape}</span>
-        <span id="tsCheckoutOrderEstDeliveryDate"></span>
+        <span id="tsCheckoutShopCustomerID">{$buyer_protection.shopCustomerID|escape}</span>
+        <span id="tsCheckoutShopOrderID">{$buyer_protection.shopOrderID|escape}</span>
+        <span id="tsCheckoutOrderDate">{$buyer_protection.orderDate|escape}</span>
+        <span id="tsCheckoutShopSystemVersion">{$buyer_protection.shopSystemVersion|escape}</span>
+        <span id="tsCheckoutWsUser">{$buyer_protection.wsUser|escape}</span>
+        <span id="tsCheckoutWsPassword">{$buyer_protection.wsPassword|escape}</span>
     </div>
 </div>
 
