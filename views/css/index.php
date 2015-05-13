@@ -17,16 +17,12 @@
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
 
-include(dirname(__FILE__).'/../../config/config.inc.php');
-include(dirname(__FILE__).'/../../init.php');
-include(dirname(__FILE__).'/trustedshops.php');
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
-if (Tools::getIsset('secure_key') && (Tools::getValue('secure_key') != '')
-	&& Configuration::get(TSCommon::PREFIX_TABLE.'SECURE_KEY') == Tools::getValue('secure_key'))
-{
-	$ts_module = new TrustedShops();
-	TSCommon::setTranslationObject($ts_module);
-	$bp = new TSCommon();
-	$bp->setModuleName($ts_module->name);
-	$bp->cronTask();
-}
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+header("Location: ../");
+exit;

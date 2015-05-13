@@ -28,18 +28,18 @@
 </style>
 <div class="trustedshops-form" style="text-align:center;border:0px solid #ccc;padding:0px;height:0px;">
     <div id="trustedShopsCheckout" style="display: none;">
-        <span id="tsCheckoutTsID">{$buyer_protection.tsID|escape}</span>
-        <span id="tsCheckoutTsProductID">{$buyer_protection.tsProductID|escape}</span>
-        <span id="tsCheckoutAmount">{$buyer_protection.amount|escape}</span>
-        <span id="tsCheckoutCurrency">{$buyer_protection.currency|escape}</span>
-        <span id="tsCheckoutPaymentType">{$buyer_protection.paymentType|escape}</span>
-        <span id="tsCheckoutBuyerEmail">{$buyer_protection.buyerEmail|escape}</span>
-        <span id="tsCheckoutShopCustomerID">{$buyer_protection.shopCustomerID|escape}</span>
-        <span id="tsCheckoutShopOrderID">{$buyer_protection.shopOrderID|escape}</span>
-        <span id="tsCheckoutOrderDate">{$buyer_protection.orderDate|escape}</span>
-        <span id="tsCheckoutShopSystemVersion">{$buyer_protection.shopSystemVersion|escape}</span>
-        <span id="tsCheckoutWsUser">{$buyer_protection.wsUser|escape}</span>
-        <span id="tsCheckoutWsPassword">{$buyer_protection.wsPassword|escape}</span>
+        <span id="tsCheckoutTsID">{$buyer_protection.tsID|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutTsProductID">{$buyer_protection.tsProductID|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutAmount">{$buyer_protection.amount|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutCurrency">{$buyer_protection.currency|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutPaymentType">{$buyer_protection.paymentType|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutBuyerEmail">{$buyer_protection.buyerEmail|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutShopCustomerID">{$buyer_protection.shopCustomerID|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutShopOrderID">{$buyer_protection.shopOrderID|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutOrderDate">{$buyer_protection.orderDate|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutShopSystemVersion">{$buyer_protection.shopSystemVersion|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutWsUser">{$buyer_protection.wsUser|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutWsPassword">{$buyer_protection.wsPassword|escape:'html':'UTF-8'}</span>
     </div>
 </div>
 

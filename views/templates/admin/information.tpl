@@ -25,12 +25,12 @@
                 </p>
             </div>
             <div class="col-xs-2 col-sm-2 col-md-2">
-                <img src="{$_path|escape}img/ts_logo.jpg" alt="" class="img-responsive"/>
+                <img src="{$_path|escape:'html':'UTF-8'}views/img/ts_logo.jpg" alt="" class="img-responsive"/>
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12 col-sm-4 col-md-4">
-                <img src="{$ts_rating_image|escape}" alt="" class="img-responsive"/>
+                <img src="{$ts_rating_image|escape:'html':'UTF-8'}" alt="" class="img-responsive"/>
             </div>
             <div class="col-xs-12 col-sm-8 col-md-8">
                 <h4>{l s='Top Features' mod='trustedshops'}</h4>
@@ -54,7 +54,7 @@
             </div>
         </div>
         <div class="row text-center">
-            <a href="{$applynow_link|escape}" target="_blank" class="btn btn-primary">{l s='Sign up free' mod='trustedshops'}</a>
+            <a href="{$applynow_link|escape:'html':'UTF-8'}" target="_blank" class="btn btn-primary">{l s='Sign up free' mod='trustedshops'}</a>
         </div>
     </div>
 </div>

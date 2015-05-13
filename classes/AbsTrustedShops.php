@@ -76,11 +76,10 @@ abstract class AbsTrustedShops
 		foreach ($arr_query as $value)
 		{
 			$arr = explode('=', $value);
-			
-			if ($arr[0] != 'certificate_delete' &&
-				$arr[0] != 'certificate_edit' &&
-				$arr[0] != 'certificate_options'
-			)
+
+			if ($arr[0] != 'certificate_delete'
+				&& $arr[0] != 'certificate_edit'
+				&& $arr[0] != 'certificate_options')
 				$arr_query_new[$arr[0]] = $arr[1];
 		}
 

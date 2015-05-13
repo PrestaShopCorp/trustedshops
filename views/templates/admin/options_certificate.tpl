@@ -40,17 +40,17 @@
 	    
 	    <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Language' mod='trustedshops'}</label>
-                <div class="col-lg-4"><output style="font-size: 13px;">{$lang|escape:'html':'UTF-8'}</output></div>
+                <div class="col-lg-4"><output class="ts-text">{$lang|escape:'html':'UTF-8'}</output></div>
 	    </div>
 	    
 	    <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Shop url' mod='trustedshops'}</label>
-		<div class="col-lg-4"><output style="font-size: 13px;">{$certificate.url|escape:'html':'UTF-8'}</output></div>
+		<div class="col-lg-4"><output class="ts-text">{$certificate.url|escape:'html':'UTF-8'}</output></div>
 	    </div>
 	    
 	    <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Trusted Shops ID' mod='trustedshops'}</label>
-		<div class="col-lg-4"><output style="font-size: 13px;">{$certificate.tsID|escape:'html':'UTF-8'}</output></div>
+		<div class="col-lg-4"><output class="ts-text">{$certificate.tsID|escape:'html':'UTF-8'}</output></div>
 	    </div>
 	    
 	    <div class="form-group">

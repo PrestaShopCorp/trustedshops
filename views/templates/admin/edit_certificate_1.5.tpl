@@ -15,11 +15,11 @@
 * @copyright 2014 silbersaiten
 * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 *}
-<script type="text/javascript" src="{$site_uri|escape:'html':'UTF-8'}modules/trustedshops/js/payment.js" ></script>
+<script type="text/javascript" src="{$site_uri|escape:'html':'UTF-8'}modules/trustedshops/views/js/payment.js" ></script>
 <script type="text/javascript">
     $().ready(function() {
-	TSPayment.payment_type = $.parseJSON('{$payment_types_json|escape:'UTF-8'}');
-	TSPayment.payment_module = $.parseJSON('{$payment_collection_json|escape:'UTF-8'}');
+	TSPayment.payment_type = $.parseJSON('{$payment_types_json|escape:'quotes':'UTF-8'}');
+	TSPayment.payment_module = $.parseJSON('{$payment_collection_json|escape:'quotes':'UTF-8'}');
 	
 	{literal}
 	$('.payment-module-label').css(TSPayment.module_box.css).fadeIn();
@@ -77,7 +77,7 @@
 	    <p>
 		<select name="payment_module">
 		    {foreach from=$payment_collection item=module_info}
-			<option value="{$module_info.id_module|escape:'intval':'UTF-8'}">{$module_info.name|escape:'html':'UTF-8'}</option>
+			<option value="{$module_info.id_module|escape:'UTF-8'}">{$module_info.name|escape:'html':'UTF-8'}</option>
 		    {/foreach}
 		</select>
 	    </p>
@@ -95,7 +95,7 @@
 		{foreach from=$certificate.payment_type item=modules key=payment_type}
 		    <div id="block-payment-{$payment_type|escape:'html':'UTF-8'}">
 			{foreach from=$modules item=module_id}
-			    <b class="payment-module-label" id="label-module-{$module_id|escape:'intval':'UTF-8'}"></b>
+			    <b class="payment-module-label" id="label-module-{$module_id|escape:'html':'UTF-8'}"></b>
 			{/foreach}
 		    </div>
 		{/foreach}
@@ -106,7 +106,7 @@
 	    {if isset($certificate.payment_type) && $certificate.payment_type|@count}
 		{foreach from=$certificate.payment_type item=modules key=payment_type}
 		    {foreach from=$modules item=module_id}
-			<input type="hidden" value="{$module_id|escape:'intval':'UTF-8'}" class="choosen_payment_type" name="choosen_payment_type[{$payment_type|escape:'html':'UTF-8'}][]">
+			<input type="hidden" value="{$module_id|escape:'html':'UTF-8'}" class="choosen_payment_type" name="choosen_payment_type[{$payment_type|escape:'html':'UTF-8'}][]">
 		    {/foreach}
 		{/foreach}
 	    {/if}

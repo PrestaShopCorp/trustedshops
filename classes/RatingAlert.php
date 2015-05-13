@@ -66,10 +66,7 @@ class RatingAlert
 	public static function removeAlerts($ids)
 	{
 		$ids = array_map('intval', $ids);
-		$query = 'DELETE '.
-			'FROM `'._DB_PREFIX_.self::TABLE_NAME.'` '.
-			'WHERE `id_alert` '.
-			'IN ('.implode(',', $ids).')';
+		$query = 'DELETE FROM `'._DB_PREFIX_.self::TABLE_NAME.'` WHERE `id_alert` IN ('.implode(',', $ids).')';
 		return Db::getInstance()->Execute($query);
 	}
 
@@ -97,12 +94,12 @@ class RatingAlert
 
 					foreach ($alerts_infos as $infos)
 					{
-						$cert = Configuration::get(TSCommon::PREFIX_TABLE . 'CERTIFICATE_' . Tools::strtoupper($infos['iso']));
+						$cert = Configuration::get(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.Tools::strtoupper($infos['iso']));
 						$certificate = (array)Tools::jsonDecode(Tools::htmlentitiesDecodeUTF8($cert));
 
 						$subject = $ts_module->l('title_part_1').' '.Configuration::get('PS_SHOP_NAME').$ts_module->l('title_part_2');
 						$template_vars = array('{ts_id}' => $certificate['tsID'],
-							'{button_url}' => TSCommon::getHttpHost(true, true)._MODULE_DIR_.$ts_module->name.'/img',
+							'{button_url}' => TSCommon::getHttpHost(true, true)._MODULE_DIR_.$ts_module->name.'/views/img',
 							'{rating_url}' => $ts_common->getRatingUrlWithBuyerEmail($infos['id_lang'], $infos['id_order'], $infos['email']));
 
 						$result = Mail::Send(
@@ -116,7 +113,7 @@ class RatingAlert
 							Configuration::get('PS_SHOP_NAME'),
 							null,
 							null,
-							dirname(__FILE__) . '/../mails/'
+							dirname(__FILE__).'/../mails/'
 						);
 
 						if ($result)
@@ -158,4 +155,3 @@ class RatingAlert
 		return Db::getInstance()->Execute('TRUNCATE TABLE `'._DB_PREFIX_.self::TABLE_NAME.'`');
 	}
 }
-

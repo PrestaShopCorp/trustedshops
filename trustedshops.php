@@ -40,7 +40,7 @@ class TrustedShops extends Module
 	private $confirmations = array();
 
 	public static $seal_displayed = false;
-	
+
 	private static $template_version;
 
 	private $available_languages = array('en', 'fr', 'de', 'es', 'it', 'pl', 'nl');
@@ -52,7 +52,7 @@ class TrustedShops extends Module
 		$this->version = '2.3.1';
 		$this->author = 'silbersaiten';
 		$this->bootstrap = true;
-		
+
 		self::$template_version = version_compare(_PS_VERSION_, '1.6', '<') ? '1.5' : '1.6';
 
 		parent::__construct();
@@ -81,15 +81,15 @@ class TrustedShops extends Module
 	{
 		self::$obj_ts_common->install();
 
-		$return = parent::install() &&
-			$this->registerHook('displayBackOfficeHeader') &&
-			$this->registerHook('orderConfirmation') &&
-			$this->registerHook('newOrder') &&
-			$this->registerHook('actionOrderStatusPostUpdate') &&
-			$this->registerHook('Footer') &&
-			$this->registerHook('paymentTop') &&
-            //$this->registerHook('displayAfterShoppingCartBlock') &&
-			$this->registerHook('orderConfirmation');
+		$return = parent::install()
+		&& $this->registerHook('displayBackOfficeHeader')
+		&& $this->registerHook('orderConfirmation')
+		&& $this->registerHook('newOrder')
+		&& $this->registerHook('actionOrderStatusPostUpdate')
+		&& $this->registerHook('Footer')
+		&& $this->registerHook('paymentTop')
+		//&& $this->registerHook('displayAfterShoppingCartBlock')
+		&& $this->registerHook('orderConfirmation');
 		$id_hook = _PS_VERSION_ < '1.5' ? Hook::get('payment') : Hook::getIdByName('payment');
 		$this->updatePosition($id_hook, 0, 1);
 
@@ -101,13 +101,13 @@ class TrustedShops extends Module
 		self::$obj_ts_common->uninstall();
 		return parent::uninstall();
 	}
-	
+
 	public static function getTemplateByVersion($template_name)
 	{
 		if (self::$template_version == '1.5')
-			return $template_name . '_1.5.tpl';
-		
-		return $template_name . '.tpl';
+			return $template_name.'_1.5.tpl';
+
+		return $template_name.'.tpl';
 	}
 
 	private function getAllowedIsobyId($id_lang)
@@ -146,7 +146,7 @@ class TrustedShops extends Module
 
 		$this->smarty->assign(array(
 			'_path' => $this->_path,
-			'ts_rating_image' => $this->_path.'img/ts_rating_'.$this->getAllowedIsobyId($this->context->cookie->id_lang).'.jpg',
+			'ts_rating_image' => $this->_path.'views/img/ts_rating_'.$this->getAllowedIsobyId($this->context->cookie->id_lang).'.jpg',
 			'applynow_link' => $applynow_link
 		));
 
@@ -260,10 +260,10 @@ class TrustedShops extends Module
 		return $this->dynamicHook($params, __FUNCTION__);
 	}
 
-    public function hookDisplayAfterShoppingCartBlock($params)
-    {
-        return $this->dynamicHook($params, __FUNCTION__);
-    }
+	public function hookDisplayAfterShoppingCartBlock($params)
+	{
+		return $this->dynamicHook($params, __FUNCTION__);
+	}
 
 	public function hookFooter($params)
 	{
@@ -293,11 +293,11 @@ class TrustedShops extends Module
 		}
 		return '';
 	}
-	
+
 	public function hookDisplayBackOfficeHeader($params)
 	{
-		if ($this->context->controller instanceof AdminModulesController && Tools::getValue('configure') == $this->name) {
-			$this->context->controller->addCSS($this->_path . 'css/admin.css');
-		}
+		unset($params);
+		if ($this->context->controller instanceof AdminModulesController && Tools::getValue('configure') == $this->name)
+			$this->context->controller->addCSS($this->_path.'views/css/admin.css');
 	}
 }

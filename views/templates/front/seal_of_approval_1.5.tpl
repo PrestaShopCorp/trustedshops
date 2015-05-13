@@ -20,10 +20,10 @@
 {else}
 <script type="text/javascript">
     (function () {
-        var _tsid = '{$trusted_shops_id|escape}';
+        var _tsid = '{$trusted_shops_id|escape:'html':'UTF-8'}';
         _tsConfig = {
-            'yOffset': '{$yoffset|escape}', /* offset from page bottom */
-            'variant': '{$variant|escape}', /* text, default, small, reviews, custom, custom_reviews */
+            'yOffset': '{$yoffset|escape:'html':'UTF-8'}', /* offset from page bottom */
+            'variant': '{$variant|escape:'html':'UTF-8'}', /* text, default, small, reviews, custom, custom_reviews */
             'customElementId': '', /* required for variants custom and custom_reviews */
             'trustcardDirection': '', /* for custom variants: topRight, topLeft, bottomRight, bottomLeft */
             'customBadgeWidth': '', /* for custom variants: 40 - 90 (in pixels) */
