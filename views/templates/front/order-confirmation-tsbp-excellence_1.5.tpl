@@ -28,16 +28,13 @@
 </style>
 <div class="trustedshops-form" style="text-align:center;border:0px solid #ccc;padding:0px;height:0px;">
     <div id="trustedShopsCheckout" style="display: none;">
-        <span id="tsCheckoutTsID">{$buyer_protection.tsID|escape:'html':'UTF-8'}</span>
-        <span id="tsCheckoutTsProductID">{$buyer_protection.tsProductID|escape:'html':'UTF-8'}</span>
-        <span id="tsCheckoutAmount">{$buyer_protection.amount|escape:'html':'UTF-8'}</span>
-        <span id="tsCheckoutCurrency">{$buyer_protection.currency|escape:'html':'UTF-8'}</span>
-        <span id="tsCheckoutPaymentType">{$buyer_protection.paymentType|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutOrderNr">{$buyer_protection.shopOrderID|escape:'html':'UTF-8'}</span>
         <span id="tsCheckoutBuyerEmail">{$buyer_protection.buyerEmail|escape:'html':'UTF-8'}</span>
-        <span id="tsCheckoutShopCustomerID">{$buyer_protection.shopCustomerID|escape:'html':'UTF-8'}</span>
-        <span id="tsCheckoutShopOrderID">{$buyer_protection.shopOrderID|escape:'html':'UTF-8'}</span>
-        <span id="tsCheckoutOrderDate">{$buyer_protection.orderDate|escape:'html':'UTF-8'}</span>
-        <span id="tsCheckoutShopSystemVersion">{$buyer_protection.shopSystemVersion|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutBuyerId">{$buyer_protection.shopCustomerID|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutOrderAmount">{$buyer_protection.amount|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutOrderCurrency">{$buyer_protection.currency|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutOrderPaymentType">{$buyer_protection.paymentType|escape:'html':'UTF-8'}</span>
+        <span id="tsCheckoutOrderEstDeliveryDate"></span>
     </div>
 </div>
 
