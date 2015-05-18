@@ -38,8 +38,6 @@
         <span id="tsCheckoutShopOrderID">{$buyer_protection.shopOrderID|escape:'html':'UTF-8'}</span>
         <span id="tsCheckoutOrderDate">{$buyer_protection.orderDate|escape:'html':'UTF-8'}</span>
         <span id="tsCheckoutShopSystemVersion">{$buyer_protection.shopSystemVersion|escape:'html':'UTF-8'}</span>
-        <span id="tsCheckoutWsUser">{$buyer_protection.wsUser|escape:'html':'UTF-8'}</span>
-        <span id="tsCheckoutWsPassword">{$buyer_protection.wsPassword|escape:'html':'UTF-8'}</span>
     </div>
 </div>
 
