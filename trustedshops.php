@@ -54,10 +54,7 @@ class TrustedShops extends Module
 		$this->bootstrap = true;
 
 		self::$template_version = version_compare(_PS_VERSION_, '1.6', '<') ? '1.5' : '1.6';
-		$this->ps_versions_compliancy = array(
-			'min' => '1.5.0.0',
-			'max' => _PS_VERSION_
-		);
+
 		parent::__construct();
 
 		TSCommon::setTranslationObject($this);
