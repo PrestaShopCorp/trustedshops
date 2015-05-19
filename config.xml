@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-        <module>
-            <name>trustedshops</name>
-            <displayName><![CDATA[Trusted Shops Vertrauensl&ouml;sungen]]></displayName>
-            <version><![CDATA[2.2.3]]></version>
-            <description><![CDATA[St&auml;rken Sie das Vertrauen in Ihren Online-Shop mit Trusted Shops G&uuml;tesiegel, K&auml;uferschutz und Kundenbewertung.]]></description>
-            <author><![CDATA[silbersaiten]]></author>
-            <tab><![CDATA[payment_security]]></tab>
-	<confirmUninstall>Sie sind sicher, dass Sie alle Ihre Einstellungen löschen möchten?</confirmUninstall>
-            <is_configurable>1</is_configurable>
-            <need_instance>1</need_instance>
+<module>
+	<name>trustedshops</name>
+	<displayName><![CDATA[Trusted Shops Customer Reviews]]></displayName>
+	<version><![CDATA[2.3.1]]></version>
+	<description><![CDATA[Easily collect, show and manage real customer reviews. Integrate the TrustedShops Trustbadge® within minutes and display trust at first glance.]]></description>
+	<author><![CDATA[silbersaiten]]></author>
+	<tab><![CDATA[advertising_marketing]]></tab>
+	<confirmUninstall>Are you sure you want to delete all your settings?</confirmUninstall>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
 	<limited_countries></limited_countries>
-        </module>
+</module>
