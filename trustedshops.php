@@ -1,6 +1,6 @@
 <?php
 /**
- * 2014 silbersaiten The module is based on the trustedshops module originally developed by PrestaShop
+ * 2015 silbersaiten The module is based on the trustedshops module originally developed by PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -13,7 +13,7 @@
  * to support@silbersaiten.de so we can send you a copy immediately.
  *
  * @author    silbersaiten www.silbersaiten.de <info@silbersaiten.de>
- * @copyright 2014 silbersaiten
+ * @copyright 2015 silbersaiten
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
 
@@ -40,19 +40,19 @@ class TrustedShops extends Module
 	private $confirmations = array();
 
 	public static $seal_displayed = false;
-	
+
 	private static $template_version;
 
-	private $available_languages = array('en', 'fr', 'de', 'es', 'it', 'pl');
+	private $available_languages = array('en', 'fr', 'de', 'es', 'it', 'pl', 'nl');
 
 	public function __construct()
 	{
 		$this->name = 'trustedshops';
-		$this->tab = 'payment_security';
-		$this->version = '2.2.3';
+		$this->tab = 'advertising_marketing';
+		$this->version = '2.3.1';
 		$this->author = 'silbersaiten';
 		$this->bootstrap = true;
-		
+
 		self::$template_version = version_compare(_PS_VERSION_, '1.6', '<') ? '1.5' : '1.6';
 
 		parent::__construct();
@@ -72,8 +72,8 @@ class TrustedShops extends Module
 		if (!empty($this->warnings))
 			$this->warning = implode(',<br />', $this->warnings).'.';
 
-		$this->displayName = $this->l('Trusted Shops trust solutions');
-		$this->description = $this->l('Build confidence in your online shop with the Trusted Shops quality seal, buyer protection and customer rating.');
+		$this->displayName = $this->l('Trusted Shops Customer Reviews');
+		$this->description = $this->l('Easily collect, show and manage real customer reviews. Integrate the TrustedShops Trustbadge® within minutes and display trust at first glance.');
 		$this->confirmUninstall = $this->l('Are you sure you want to delete all your settings?');
 	}
 
@@ -81,16 +81,15 @@ class TrustedShops extends Module
 	{
 		self::$obj_ts_common->install();
 
-		$return = parent::install() &&
-			$this->registerHook('LeftColumn') &&
-			$this->registerHook('displayBackOfficeHeader') &&
-			$this->registerHook('orderConfirmation') &&
-			$this->registerHook('newOrder') &&
-			$this->registerHook('actionOrderStatusPostUpdate') &&
-			$this->registerHook('Footer') &&
-			$this->registerHook('paymentTop') &&
-            //$this->registerHook('displayAfterShoppingCartBlock') &&
-			$this->registerHook('orderConfirmation');
+		$return = parent::install()
+		&& $this->registerHook('displayBackOfficeHeader')
+		&& $this->registerHook('orderConfirmation')
+		&& $this->registerHook('newOrder')
+		&& $this->registerHook('actionOrderStatusPostUpdate')
+		&& $this->registerHook('Footer')
+		&& $this->registerHook('paymentTop')
+		//&& $this->registerHook('displayAfterShoppingCartBlock')
+		&& $this->registerHook('orderConfirmation');
 		$id_hook = _PS_VERSION_ < '1.5' ? Hook::get('payment') : Hook::getIdByName('payment');
 		$this->updatePosition($id_hook, 0, 1);
 
@@ -102,13 +101,13 @@ class TrustedShops extends Module
 		self::$obj_ts_common->uninstall();
 		return parent::uninstall();
 	}
-	
+
 	public static function getTemplateByVersion($template_name)
 	{
 		if (self::$template_version == '1.5')
-			return $template_name . '_1.5.tpl';
-		
-		return $template_name . '.tpl';
+			return $template_name.'_1.5.tpl';
+
+		return $template_name.'.tpl';
 	}
 
 	private function getAllowedIsobyId($id_lang)
@@ -124,24 +123,30 @@ class TrustedShops extends Module
 		switch (Tools::strtolower(Language::getIsoById((int)$this->context->cookie->id_lang)))
 		{
 			case 'de':
-				$applynow_link = 'http://www.trustedshops.de/shopbetreiber/index.html?shopsw=eulegal';
+				$applynow_link = 'http://www.trustedshops.de/shopbetreiber/index.html?a_aid=546a2b2c79731&etcc_med=link&etcc_cmp=back&etcc_par=sofpar&etcc_ctv=prestashop&etcc_tar=sales';
 				break;
 			case 'es':
-				$applynow_link = 'https://www.trustedshops.es/comerciante/partner/';
+				$applynow_link = 'https://www.trustedshops.es/comerciante/?a_aid=546a2b2c79731';
 				break;
 			case 'fr':
-				$applynow_link = 'https://www.trustedshops.fr/marchands/partenaires/';
+				$applynow_link = 'https://www.trustedshops.fr/inscription/?a_aid=546a2b2c79731&utm_source=par&utm_medium=links&utm_content=presta_modul&utm_campaign=pricing';
 				break;
 			case 'pl':
-				$applynow_link = 'https://www.trustedshops.pl/handlowcy/partner/';
+				$applynow_link = 'https://www.trustedshops.pl/handlowcy/?a_aid=546a2b2c79731';
+				break;
+			case 'it':
+				$applynow_link = 'https://www.trustedshops.it/venditori/?a_aid=546a2b2c79731';
+				break;
+			case 'nl':
+				$applynow_link = 'http://www.trustedshops.nl/registreer/?a_aid=546a2b2c79731?utm_source=par&utm_medium=links&utm_content=presta_backend&utm_campaign=pricing';
 				break;
 			default:
-				$applynow_link = 'https://www.trustedshops.co.uk/merchants/?shopsw=eulegal';
+				$applynow_link = 'https://www.trustedshops.co.uk/signup/?a_aid=546a2b2c79731&utm_source=par&utm_medium=links&utm_content=presta_modul&utm_campaign=pricing';
 		}
 
 		$this->smarty->assign(array(
 			'_path' => $this->_path,
-			'ts_rating_image' => $this->_path.'img/ts_rating_'.$this->getAllowedIsobyId($this->context->cookie->id_lang).'.jpg',
+			'ts_rating_image' => $this->_path.'views/img/ts_rating_'.$this->getAllowedIsobyId($this->context->cookie->id_lang).'.jpg',
 			'applynow_link' => $applynow_link
 		));
 
@@ -250,25 +255,15 @@ class TrustedShops extends Module
 		return $this->dynamicHook($params, __FUNCTION__);
 	}
 
-	public function hookLeftColumn($params)
-	{
-		return $this->dynamicHook($params, __FUNCTION__);
-	}
-
-	public function hookRightColumn($params)
-	{
-		return $this->hookLeftColumn($params);
-	}
-
 	public function hookPaymentTop($params)
 	{
 		return $this->dynamicHook($params, __FUNCTION__);
 	}
 
-    public function hookDisplayAfterShoppingCartBlock($params)
-    {
-        return $this->dynamicHook($params, __FUNCTION__);
-    }
+	public function hookDisplayAfterShoppingCartBlock($params)
+	{
+		return $this->dynamicHook($params, __FUNCTION__);
+	}
 
 	public function hookFooter($params)
 	{
@@ -298,11 +293,11 @@ class TrustedShops extends Module
 		}
 		return '';
 	}
-	
+
 	public function hookDisplayBackOfficeHeader($params)
 	{
-		if ($this->context->controller instanceof AdminModulesController && Tools::getValue('configure') == $this->name) {
-			$this->context->controller->addCSS($this->_path . 'css/admin.css');
-		}
+		unset($params);
+		if ($this->context->controller instanceof AdminModulesController && Tools::getValue('configure') == $this->name)
+			$this->context->controller->addCSS($this->_path.'views/css/admin.css');
 	}
 }

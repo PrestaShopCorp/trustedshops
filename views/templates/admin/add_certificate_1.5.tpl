@@ -17,9 +17,9 @@
 *}
 <form action="{$form_action|escape:'html':'UTF-8'}" method="post" class="form-horizontal">
 	<fieldset>
-		<legend>{l s='Add Trusted Shops certificate' mod='trustedshops'}</legend>
+		<legend>{l s='Enter Trusted Shops ID' mod='trustedshops'}</legend>
 		<div class="form-wrapper">	
-			<label>{l s='New certificate' mod='trustedshops'}</label>
+			<label>{l s='Your Trusted Shops ID' mod='trustedshops'}</label>
 			<div class="margin-form">
 				<input type="text" name="new_certificate" value="" maxlength="33"/>
 			</div>

@@ -47,7 +47,7 @@
 	    <p>{$certificate.url|escape:'html':'UTF-8'}</p>
 	</div>
 	
-	<label>{l s='Certificate id' mod='trustedshops'}</label>
+	<label>{l s='Trusted Shops ID' mod='trustedshops'}</label>
 	<div class="margin-form">
 	    <p>{$certificate.tsID|escape:'html':'UTF-8'}</p>
 	</div>
@@ -64,43 +64,17 @@
 		{/foreach}
 	    </select>
 	</div>
-	    
-	<div class="margin-form">
-	    <p><strong>{l s='Trusted Shops Customer Rating' mod='trustedshops'}</strong></p>
-	</div>
-	    
-	<div class="margin-form">
-	    <p>{l s='Start collecting 100% real customer ratings now! Integrate rating request and rating widget in your shop and show honest interest in you customer\'s opinions.' mod='trustedshops'}</p>
-	</div>
-	
-	<label>{l s='Display rating link in shop front-end' mod='trustedshops'}</label>
-	<div class="margin-form">
-	    <input type="checkbox" name="display_rating_front_end" value="1" {if isset($certificate.display_rating_front_end) && $certificate.display_rating_front_end}checked="checked"{/if} />
-	</div>
-	
-	<label>{l s='Display rating link on order confirmation page' mod='trustedshops'}</label>
-	<div class="margin-form">
-	    <input type="checkbox" name="display_rating_oc" value="1" {if isset($certificate.display_rating_oc) && $certificate.display_rating_oc}checked="checked"{/if} />
-	</div>
-	
-	<label>{l s='Send rating link in separate e-mail' mod='trustedshops'}</label>
-	<div class="margin-form">
-	    <div>
-		<input onclick="toggleSendMailInfos()" type="checkbox" name="send_separate_mail" value="1" {if isset($certificate.send_separate_mail) && $certificate.send_separate_mail}checked="checked"{/if} /> <br />
-		<div id="send_seperate_mail_infos">
-		    {l s='Send the email after' mod='trustedshops'}
-		    <input class="" size="2" type="text" name="send_seperate_mail_delay" value="{if isset($certificate.send_seperate_mail_delay)}{$certificate.send_seperate_mail_delay|escape:'html':'UTF-8'}{/if}" />
-		    {l s='days' mod='trustedshops'} {l s='of setting order to state' mod='trustedshops'}
-		    <select name="send_seperate_mail_order_state">
-			{foreach from=$order_states item=order_state}
-			<option value="{$order_state.id_order_state|escape:'intval':'UTF-8'}" {if isset($certificate.send_seperate_mail_order_state) && $order_state.id_order_state == $certificate.send_seperate_mail_order_state}selected="selected"{/if}>{$order_state.name|escape:'html':'UTF-8'}</option>
-			{/foreach}
-		    </select>
-		    <span style="color: #CC0000; font-weight: bold;">{l s='IMPORTANT:' mod='trustedshops'}</span> {l s='Put this URL in crontab or call it manually daily:' mod='trustedshops'}<br />
-		    {$cron_link|escape:'html':'UTF-8'}
+
+	<label>{l s='yOffset' mod='trustedshops'}</label>
+		<div class="margin-form">
+			<input type="text" name="yoffset" value="{$yoffset|escape:'html':'UTF-8'}" maxlength="33"/>
 		</div>
-	    </div>
-	</div>
+
+    <label>{l s='JS Code' mod='trustedshops'}</label>
+		<div class="margin-form">
+			<textarea name="jscode" rows="10" id="social-text">{$jscode|escape:'html':'UTF-8'}</textarea>
+			<p class="help-block">{l s='This code is displayed (if the field is not empty) instead of the standard badge' mod='trustedshops'}</p>
+		</div>
     </fieldset>
     
     <p style="text-align:center;">

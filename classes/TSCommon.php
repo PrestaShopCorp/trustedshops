@@ -59,11 +59,11 @@ class TSCommon extends AbsTrustedShops
 	);
 
 	private $error_soap_call;
-	
+
 	private static $template_version;
 
 	const PREFIX_TABLE = 'TS';
-	
+
 	/* 'test' or 'production' */
 	const ENV_MOD = 'production';
 	const DB_ITEMS = 'ts_buyerprotection_items';
@@ -105,7 +105,14 @@ class TSCommon extends AbsTrustedShops
 	 * @see TSCommon::__construct()
 	 * @var array
 	 */
-	public static $available_languages = array(/*'XX'=>'xx', */'EN' => 'en', 'FR' => 'fr', 'DE' => 'de', 'PL' => 'pl', 'ES' => 'es', 'IT' => 'it');
+	public static $available_languages = array(/*'XX'=>'xx', */
+		'EN' => 'en',
+		'FR' => 'fr',
+		'DE' => 'de',
+		'PL' => 'pl',
+		'ES' => 'es',
+		'IT' => 'it',
+		'NL' => 'nl');
 
 	public static $available_languages_for_adding = array();
 
@@ -113,7 +120,7 @@ class TSCommon extends AbsTrustedShops
 	 * @todo : be sure : see TrustedShopsRating::__construct()
 	 * @var array
 	 */
-	public $limited_countries = array('PL', 'GB', 'US', 'FR', 'DE', 'ES', 'IT');
+	public $limited_countries = array('PL', 'GB', 'US', 'FR', 'DE', 'ES', 'IT' , 'NL');
 
 	/**
 	 * Differents urls to call for Trusted Shops API
@@ -166,7 +173,7 @@ class TSCommon extends AbsTrustedShops
 	public function __construct()
 	{
 		self::$template_version = version_compare(_PS_VERSION_, '1.6', '<') ? '1.5' : '1.6';
-		
+
 		// need to set this in constructor to allow translation
 		TSCommon::$payments_type = array(
 			'DIRECT_DEBIT' => $this->l('Direct debit'),
@@ -177,6 +184,7 @@ class TSCommon extends AbsTrustedShops
 			'CHEQUE' => $this->l('Cheque'),
 			'PAYBOX' => $this->l('Paybox'),
 			'PAYPAL' => $this->l('PayPal'),
+			'AMAZON_PAYMENTS' => $this->l('Amazon payments'),
 			'CASH_ON_PICKUP' => $this->l('Cash on pickup'),
 			'FINANCING' => $this->l('Financing'),
 			'LEASING' => $this->l('Leasing'),
@@ -187,6 +195,9 @@ class TSCommon extends AbsTrustedShops
 			'SHOP_CARD' => $this->l('Online shop payment card'),
 			'DIRECT_E_BANKING' => $this->l('DIRECTebanking.com'),
 			'MONEYBOOKERS' => $this->l('moneybookers.com'),
+			'DOTPAY' => $this->l('Dotpay'),
+			'PLATNOSCI' => $this->l('Platnosci'),
+			'PRZELEWY24' => $this->l('Przelewy24'),
 			'OTHER' => $this->l('Other method of payment'),
 		);
 
@@ -204,7 +215,9 @@ class TSCommon extends AbsTrustedShops
 				$certificate = Configuration::get(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.Tools::strtoupper($iso));
 				TSCommon::$certificates[Tools::strtoupper($iso)] = (array)Tools::jsonDecode(Tools::htmlentitiesDecodeUTF8($certificate));
 
-				if (!isset(TSCommon::$certificates[Tools::strtoupper($iso)]['tsID']) || (isset(TSCommon::$certificates[Tools::strtoupper($iso)]['tsID']) && TSCommon::$certificates[Tools::strtoupper($iso)]['tsID'] == ''))
+				if (!isset(TSCommon::$certificates[Tools::strtoupper($iso)]['tsID'])
+					|| (isset(TSCommon::$certificates[Tools::strtoupper($iso)]['tsID'])
+						&& TSCommon::$certificates[Tools::strtoupper($iso)]['tsID'] == ''))
 					TSCommon::$available_languages_for_adding[Tools::strtoupper($iso)] = Tools::strtoupper($iso);
 			}
 
@@ -219,13 +232,13 @@ class TSCommon extends AbsTrustedShops
 			}
 		}
 	}
-	
-	public static function getTemplateByVersion($template_name) {
-		if (self::$template_version == '1.5') {
-			return $template_name . '_1.5.tpl';
-		}
-		
-		return $template_name . '.tpl';
+
+	public static function getTemplateByVersion($template_name)
+	{
+		if (self::$template_version == '1.5')
+			return $template_name.'_1.5.tpl';
+
+		return $template_name.'.tpl';
 	}
 
 	public function install()
@@ -235,7 +248,13 @@ class TSCommon extends AbsTrustedShops
 
 		foreach (array_keys(self::$available_languages) as $iso)
 			Configuration::updateValue(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.Tools::strtoupper($iso),
-				Tools::htmlentitiesUTF8(Tools::jsonEncode(array('stateEnum' => '', 'typeEnum' => '', 'url' => '', 'tsID' => '', 'user' => '', 'password' => ''))));
+				Tools::htmlentitiesUTF8(Tools::jsonEncode(array(
+					'stateEnum' => '',
+					'typeEnum' => '',
+					'url' => '',
+					'tsID' => '',
+					'user' => '',
+					'password' => ''))));
 
 		Configuration::updateValue(TSCommon::PREFIX_TABLE.'SHOPSW', '');
 		Configuration::updateValue(TSCommon::PREFIX_TABLE.'ET_CID', '');
@@ -292,6 +311,7 @@ class TSCommon extends AbsTrustedShops
 			$category->link_rewrite[$language] = 'trustedshops';
 		}
 
+		// $category->id_parent = Configuration::get('PS_HOME_CATEGORY');
 		$category->id_parent = 0;
 		$category->level_depth = 0;
 		$category->active = 0;
@@ -380,12 +400,14 @@ class TSCommon extends AbsTrustedShops
 	private function checkCertificate($certificate, $lang)
 	{
 		$array_state = array(
-			'PRODUCTION' => $this->l('The certificate is valid'),
-			'CANCELLED' => $this->l('The certificate has expired'),
-			'DISABLED' => $this->l('The certificate has been disabled'),
+			'PRODUCTION' => $this->l('The Trusted Shops ID is valid'),
+			'NO_AUDIT' => $this->l('The Trusted Shops ID is not audit'),
+			'CANCELLED' => $this->l('The Trusted Shops ID has expired'),
+			'DISABLED' => $this->l('The Trusted Shops ID has been disabled'),
 			'INTEGRATION' => $this->l('The shop is currently being certified'),
-			'INVALID_TS_ID' => $this->l('No certificate has been allocated to the Trusted Shops ID'),
-			'TEST' => $this->l('Test certificate'),
+			'INVALID_TS_ID' => $this->l('No ID has been allocated to the Trusted Shops ID'),
+			'TEST' => $this->l('Test Trusted Shops ID'),
+
 		);
 
 		$client = $this->getClient();
@@ -394,7 +416,7 @@ class TSCommon extends AbsTrustedShops
 		if ($lang == '')
 			$this->errors[] = $this->l('Select language');
 		elseif (!in_array($lang, self::$available_languages_for_adding))
-			$this->errors[] = $this->l('This language is not in list of available languages for certificates');
+			$this->errors[] = $this->l('This language is not in list of available languages for Trusted Shops ID');
 		elseif ($this->isValidCertificateID($certificate))
 		{
 			try
@@ -411,15 +433,14 @@ class TSCommon extends AbsTrustedShops
 				throw new TSBPException($validation, TSBPException::ADMINISTRATION);
 			if (!$validation || array_key_exists($validation->stateEnum, $array_state))
 			{
-				if ($validation->stateEnum === 'TEST' ||
-					$validation->stateEnum === 'PRODUCTION' ||
-					$validation->stateEnum === 'INTEGRATION'
-				)
+				if ($validation->stateEnum === 'TEST'
+					|| $validation->stateEnum === 'PRODUCTION'
+					|| $validation->stateEnum === 'INTEGRATION')
 				{
 					$this->confirmations[] = $array_state[$validation->stateEnum];
 					return $validation;
 				}
-				elseif ($validation->stateEnum == 'INVALID_TS_ID')
+				elseif ($validation->stateEnum == 'INVALID_TS_ID' || $validation->stateEnum == 'NO_AUDIT')
 				{
 
 					$filename = $this->getTempWidgetFilename($certificate);
@@ -452,7 +473,7 @@ class TSCommon extends AbsTrustedShops
 				$this->errors[] = $this->l('Unknown error.');
 		}
 		else
-			$this->errors[] = $this->l('Invalid Certificate ID.');
+			$this->errors[] = $this->l('Invalid Trusted Shops ID.');
 	}
 
 	/**
@@ -527,7 +548,7 @@ class TSCommon extends AbsTrustedShops
 			array('name' => 'paymentType', 'validator' => array('isString')),
 			array('name' => 'buyerEmail', 'validator' => array('isEmail')),
 			array('name' => 'shopCustomerID', 'validator' => array('isInt')),
-			array('name' => 'shopOrderID', 'validator' => array('isInt')),
+			array('name' => 'shopOrderID', 'validator' => array('isString')),
 			array('name' => 'orderDate', 'ereg' => '#[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}#'),
 			array('name' => 'shopSystemVersion', 'validator' => array('isCleanHtml')),
 			array('name' => 'wsUser', 'validator' => array('isCleanHtml')),
@@ -717,11 +738,13 @@ class TSCommon extends AbsTrustedShops
 
 			if (!empty($this->errors))
 			{
-				$return_message = '<p style="color:red;">'.$this->l('Trusted Shops API returns an error concerning the application #').$application['id_application'].': <br />'.implode(', <br />', $this->errors).'</p>';
+				$return_message = '<p style="color:red;">'.$this->l('Trusted Shops API returns an error concerning the application #').
+					$application['id_application'].': <br />'.implode(', <br />', $this->errors).'</p>';
 				$this->errors = array();
 			}
 			elseif ($code > 0)
-				$return_message = sprintf($this->l('Trusted Shops application number %1$d was successfully processed. The guarantee number is: %2$d'), $application['id_application'], $code);
+				$return_message = sprintf($this->l('Trusted Shops application number %1$d was successfully processed. 
+					The guarantee number is: %2$d'), $application['id_application'], $code);
 
 			$query = '
 			UPDATE `'.$db_name.'`
@@ -772,7 +795,8 @@ class TSCommon extends AbsTrustedShops
 		Configuration::updateValue(TSCommon::PREFIX_TABLE.'ET_LID', TSCommon::$et_lid);
 
 		$link_registration = $this->makeRegistrationLink(TSCommon::$shopsw, TSCommon::$et_cid, TSCommon::$et_lid, Tools::getValue('lang'));
-		$this->confirmations[] = $this->l('Registration link has been created. Follow this link if you were not redirected earlier:').'&nbsp;<a href="'.$link_registration.'" class="link">&gt;'.$this->l('Link').'&lt;</a>';
+		$this->confirmations[] = $this->l('Registration link has been created. Follow this link if you were not redirected earlier:').'&nbsp;<a href="'.
+			$link_registration.'" class="link">&gt;'.$this->l('Link').'&lt;</a>';
 
 		return $link_registration;
 	}
@@ -835,9 +859,9 @@ class TSCommon extends AbsTrustedShops
 			$product->id_category_default = TSCommon::$cat_id;
 			$product->active = true;
 			$product->visibility = 'none';
-			$product->id_tax = 0;
+			$product->id_tax_rules_group = 0;
 			$product->add();
-
+			$product->addToCategories(TSCommon::$cat_id);
 			if ($product->id)
 			{
 				$query = '
@@ -898,21 +922,21 @@ class TSCommon extends AbsTrustedShops
 
 		return (bool)$checked_certificate;
 	}
-	
+
 	public static function registerCertificate($certificate_id)
 	{
 		if (extension_loaded('curl'))
 		{
 			$ch = curl_init();
-			
+
 			$data = array(
 				'cid' => $certificate_id,
 				'time' => time()
 			);
-			
+
 			curl_setopt_array($ch, array(
 				CURLOPT_HEADER => false,
-				CURLOPT_URL => 'http://silbersaiten.de/ts/register.php?' . http_build_query($data),
+				CURLOPT_URL => 'http://silbersaiten.de/ts/register.php?'.http_build_query($data),
 				CURLOPT_POST => 0,
 				CURLOPT_FRESH_CONNECT => 1,
 				CURLOPT_FOLLOWLOCATION => 1,
@@ -921,8 +945,8 @@ class TSCommon extends AbsTrustedShops
 				CURLOPT_FORBID_REUSE => 1,
 				CURLOPT_TIMEOUT => 10
 			));
-			
-			if ( ! $result = curl_exec($ch))
+
+			if (!$result = curl_exec($ch))
 				echo curl_error($ch);
 
 			curl_close($ch);
@@ -961,6 +985,8 @@ class TSCommon extends AbsTrustedShops
 				'user' => '',
 				'password' => '',
 				'variant' => 'default',
+				'yoffset' => '0',
+				'jscode' => '',
 				'display_rating_front_end' => '1',
 				'display_rating_oc' => '0',
 				'send_separate_mail' => '0',
@@ -969,10 +995,11 @@ class TSCommon extends AbsTrustedShops
 			);
 
 			// update the configuration var
-			Configuration::updateValue(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.Tools::strtoupper($checked_certificate->certificationLanguage), Tools::htmlentitiesUTF8(Tools::jsonEncode(TSCommon::$certificates[Tools::strtoupper($checked_certificate->certificationLanguage)])));
+			Configuration::updateValue(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.Tools::strtoupper($checked_certificate->certificationLanguage), 
+				Tools::htmlentitiesUTF8(Tools::jsonEncode(TSCommon::$certificates[Tools::strtoupper($checked_certificate->certificationLanguage)])));
 			unset(self::$available_languages_for_adding[Tools::strtoupper($checked_certificate->certificationLanguage)]);
-			$this->confirmations[] = $this->l('Certificate has been added successfully.');
-			
+			$this->confirmations[] = $this->l('Your Trusted Shops membership is valid.');
+
 			if ($checked_certificate->typeEnum !== 'UNKNOWN')
 				self::registerCertificate($checked_certificate->tsID);
 
@@ -1033,12 +1060,13 @@ class TSCommon extends AbsTrustedShops
 				TSCommon::$certificates[$iso_lang]['user'] = $user;
 				TSCommon::$certificates[$iso_lang]['password'] = $password;
 
-				Configuration::updateValue(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.$iso_lang, Tools::htmlentitiesUTF8(Tools::jsonEncode(TSCommon::$certificates[$iso_lang])));
-				$this->confirmations[] = $this->l('Certificate login has been successful.');
+				Configuration::updateValue(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.
+					$iso_lang, Tools::htmlentitiesUTF8(Tools::jsonEncode(TSCommon::$certificates[$iso_lang])));
+				$this->confirmations[] = $this->l('ID login has been successful.');
 
 			}
 			else
-				$this->errors[] = $this->l('Certificate login failed');
+				$this->errors[] = $this->l('ID login failed');
 		}
 		else
 			$this->errors[] = $this->l('You have to set a username and a password before any changes can be made.');
@@ -1049,6 +1077,8 @@ class TSCommon extends AbsTrustedShops
 	private function submitChangeOptionsCertificate()
 	{
 		$variant = Tools::getValue('variant', 'default');
+		$yoffset = Validate::isInt(Tools::getValue('yoffset', '0'))?Tools::getValue('yoffset', '0'):0;
+		$jscode = Tools::getValue('jscode', 'default');
 		$display_rating_front_end = Tools::getValue('display_rating_front_end', '0');
 		$display_rating_oc = Tools::getValue('display_rating_oc', '0');
 		$send_separate_mail = Tools::getValue('send_separate_mail', '0');
@@ -1056,9 +1086,10 @@ class TSCommon extends AbsTrustedShops
 		$send_seperate_mail_order_state = Tools::getValue('send_seperate_mail_order_state', '0');
 		$iso_lang = Tools::strtoupper(Tools::getValue('iso_lang'));
 
-
 		TSCommon::$certificates[$iso_lang] = array_merge(TSCommon::$certificates[$iso_lang], array(
 			'variant' => $variant,
+			'yoffset' => $yoffset,
+			'jscode' => $jscode,
 			'display_rating_front_end' => $display_rating_front_end,
 			'display_rating_oc' => $display_rating_oc,
 			'send_separate_mail' => $send_separate_mail,
@@ -1066,14 +1097,13 @@ class TSCommon extends AbsTrustedShops
 			'send_seperate_mail_order_state' => $send_seperate_mail_order_state
 		));
 
-
 		//update the configuration var
-		Configuration::updateValue(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.$iso_lang, Tools::htmlentitiesUTF8(Tools::jsonEncode(TSCommon::$certificates[$iso_lang])));
+		Configuration::updateValue(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.
+			$iso_lang, Tools::htmlentitiesUTF8(Tools::jsonEncode(TSCommon::$certificates[$iso_lang])));
 
 		//print_r(Configuration::get(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.$iso_lang)); exit;
 
-		$this->confirmations[] = $this->l('Certificate options has been modified successfully.');
-
+		$this->confirmations[] = $this->l('Trusted Shops ID options has been modified successfully.');
 
 		//$this->errors[] = $this->l('You have to set a username and a password before any changes can be made.');
 
@@ -1134,7 +1164,8 @@ class TSCommon extends AbsTrustedShops
 			$certificate_to_delete = TSCommon::$certificates[$delete]['tsID'];
 			Configuration::deleteByName(TSCommon::PREFIX_TABLE.'CERTIFICATE_'.Tools::strtoupper($delete));
 			unset(TSCommon::$certificates[$delete]);
-			$this->confirmations[] = $this->l('The certificate').' "'.$certificate_to_delete.'" ('.$this->l('language').' : '.$delete.') '.$this->l('has been deleted successfully');
+			$this->confirmations[] = $this->l('The Trusted Shops ID').' "'.$certificate_to_delete.
+				'" ('.$this->l('language').' : '.$delete.') '.$this->l('has been deleted successfully');
 		}
 
 		// edit cert
@@ -1144,7 +1175,6 @@ class TSCommon extends AbsTrustedShops
 		// set options of cert
 		if ($options != '')
 			$posts_return['options_certificate'] = $options;
-
 
 		if (Tools::isSubmit('submit_change_certificate'))
 			$posts_return['change_certificate'] = $this->submitChangeCertificate();
@@ -1166,8 +1196,7 @@ class TSCommon extends AbsTrustedShops
 		$bool_display_certificats = false;
 		$posts_return = $this->preProcess();
 
-		$out = $this->displayPresentation();
-		$out .= $this->displayFormAddCertificate(isset($posts_return['add_certificate']) && $posts_return['add_certificate']);
+		$out = $this->displayFormAddCertificate(isset($posts_return['add_certificate']) && $posts_return['add_certificate']);
 
 		if (is_array(self::$certificates))
 			foreach (self::$certificates as $certif)
@@ -1181,7 +1210,6 @@ class TSCommon extends AbsTrustedShops
 
 		if (isset($posts_return['options_certificate']))
 			$out .= $this->displayFormOptionsCertificate($posts_return['options_certificate']).'<br />';
-
 
 		$out .= $this->displayInfoCronTask();
 
@@ -1202,26 +1230,15 @@ class TSCommon extends AbsTrustedShops
 			'configure'   => urlencode(self::$translation_object->name),
 			'tab_module'  => self::$translation_object->tab,
 			'module_name' => urlencode(self::$translation_object->name),
-			'token'       => Tools::getAdminTokenLite('AdminModules')
+			// 'token'       => Tools::getAdminTokenLite('AdminModules')
 		);
-		
+
 		$link = Context::getContext()->link->getAdminLink('AdminModules', true);
-		
+
 		foreach ($params as $p => $v)
-		{
-			$link.= '&'.$p.'='.$v;
-		}
-		
+			$link .= '&'.$p.'='.$v;
+
 		return $link;
-	}
-
-	private function displayPresentation()
-	{
-		TSCommon::$smarty->assign(array(
-			'presentation' => TSCommon::$env_api
-		));
-
-		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('presentation'));
 	}
 
 	private function displayFormRegistrationLink($link = false)
@@ -1246,7 +1263,7 @@ class TSCommon extends AbsTrustedShops
 			'languages' => TSCommon::$available_languages_for_adding,
 			'lang_default' => Tools::getValue('lang'),
 		));
-		
+
 		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('add_certificate'));
 	}
 
@@ -1257,7 +1274,7 @@ class TSCommon extends AbsTrustedShops
 			'certificates' => TSCommon::$certificates,
 			'configure_link' => $this->getLinkConfigureModule()
 		));
-		
+
 		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('certificate_list'));
 	}
 
@@ -1307,24 +1324,26 @@ class TSCommon extends AbsTrustedShops
 			'payment_types_json' => Tools::jsonEncode(TSCommon::$payments_type),
 			'payment_collection_json' => Tools::jsonEncode($payment_module_collection)
 		));
-		
+
 		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('edit_certificate'));
 	}
 
 	private function displayFormOptionsCertificate($lang)
 	{
-
 		$certificate = TSCommon::$certificates[$lang];
-		
+
 		TSCommon::$smarty->assign(array(
 			'form_action' => $this->makeFormAction(strip_tags($_SERVER['REQUEST_URI']), $this->id_tab),
 			'lang' => $lang,
 			'certificate' => $certificate,
 			'available_seal_variants' => $this->available_seal_variants,
+			'yoffset' => $certificate['yoffset'],
+			'jscode' => $certificate['jscode'],
 			'order_states' => OrderState::getOrderStates(Context::getContext()->language->id),
-			'cron_link' => self::getHttpHost(true, true)._MODULE_DIR_.self::$module_name.'/cron.php?secure_key='.Configuration::get(TSCommon::PREFIX_TABLE.'SECURE_KEY')
+			'cron_link' => self::getHttpHost(true, true)._MODULE_DIR_.self::$module_name.'/cron.php?secure_key='.
+				Configuration::get(TSCommon::PREFIX_TABLE.'SECURE_KEY')
 		));
-		
+
 		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('options_certificate'));
 	}
 
@@ -1333,7 +1352,7 @@ class TSCommon extends AbsTrustedShops
 		TSCommon::$smarty->assign(array(
 			'cron_path' => $this->getCronFilePath(),
 		));
-		
+
 		return TSCommon::$smarty->fetch(dirname(__FILE__).'/../views/templates/admin/'.self::getTemplateByVersion('cron_list'));
 	}
 
@@ -1342,7 +1361,6 @@ class TSCommon extends AbsTrustedShops
 		$iso_lang = $iso_cert = Tools::strtoupper(Language::getIsoById($params['cookie']->id_lang));
 
 		$tab_id = false;
-
 		if (isset(TSCommon::$certificates[Tools::strtoupper($iso_cert)]['tsID']))
 			$tab_id = TSCommon::$certificates[Tools::strtoupper($iso_cert)]['tsID'];
 
@@ -1351,9 +1369,14 @@ class TSCommon extends AbsTrustedShops
 
 		if (isset(TSCommon::$certificates[$iso_cert]['tsID']))
 		{
-
 			TSCommon::$smarty->assign('trusted_shops_id', TSCommon::$certificates[$iso_cert]['tsID']);
-			TSCommon::$smarty->assign('variant', isset(TSCommon::$certificates[$iso_cert]['variant']) ? (in_array(TSCommon::$certificates[$iso_cert]['variant'], array_keys($this->available_seal_variants)) ? TSCommon::$certificates[$iso_cert]['variant'] : 'default') : 'default');
+			TSCommon::$smarty->assign('variant', isset(TSCommon::$certificates[$iso_cert]['variant'])
+				? (in_array(TSCommon::$certificates[$iso_cert]['variant'], array_keys($this->available_seal_variants))
+					? TSCommon::$certificates[$iso_cert]['variant']
+					: 'default')
+				: 'default');
+			TSCommon::$smarty->assign('yoffset', TSCommon::$certificates[$iso_cert]['yoffset']);
+			TSCommon::$smarty->assign('jscode', TSCommon::$certificates[$iso_cert]['jscode']);
 			TSCommon::$smarty->assign('onlineshop_name', ConfigurationCore::get('PS_SHOP_NAME'));
 
 			$url = str_replace(array('#shop_id#', '#shop_name#'), array(
@@ -1367,7 +1390,11 @@ class TSCommon extends AbsTrustedShops
 			{
 				$certificate = TSCommon::$certificates[$iso_cert];
 
-				if (isset($certificate['tsID']) && ($certificate['typeEnum'] == 'CLASSIC' || $certificate['typeEnum'] == 'UNKNOWN' || ($certificate['typeEnum'] == 'EXCELLENCE' && $certificate['user'] != '' && $certificate['password'] != '')))
+				if (isset($certificate['tsID']) && ($certificate['typeEnum'] == 'CLASSIC'
+					|| $certificate['typeEnum'] == 'UNKNOWN'
+					|| ($certificate['typeEnum'] == 'EXCELLENCE'
+						&& $certificate['user'] != ''
+						&& $certificate['password'] != '')))
 					return TrustedShops::displaySeal();
 			}
 		}
@@ -1387,32 +1414,32 @@ class TSCommon extends AbsTrustedShops
 	 * @param array $params
 	 * @return string tpl content
 	 */
-    public function hookDisplayAfterShoppingCartBlock($params)
-    {
-        return $this->hookPaymentTop($params);
-    }
+	public function hookDisplayAfterShoppingCartBlock($params)
+	{
+		return $this->hookPaymentTop($params);
+	}
 
 	public function hookPaymentTop($params)
 	{
 		$lang = Tools::strtoupper(Language::getIsoById($params['cookie']->id_lang));
 
-
-		if (!isset(TSCommon::$certificates[$lang]) ||
-			!isset(TSCommon::$certificates[$lang]['typeEnum'])
-		)
+		if (!isset(TSCommon::$certificates[$lang])
+			|| !isset(TSCommon::$certificates[$lang]['typeEnum']))
 			return '';
 
 		// This hook is available only with EXCELLENCE certificate.
-		if (TSCommon::$certificates[$lang]['typeEnum'] == 'CLASSIC' || TSCommon::$certificates[$lang]['typeEnum'] == 'UNKNOWN' ||
-			(TSCommon::$certificates[$lang]['stateEnum'] !== 'INTEGRATION' &&
-				TSCommon::$certificates[$lang]['stateEnum'] !== 'PRODUCTION' &&
-				TSCommon::$certificates[$lang]['stateEnum'] !== 'TEST'))
+		if (TSCommon::$certificates[$lang]['typeEnum'] == 'CLASSIC'
+			|| TSCommon::$certificates[$lang]['typeEnum'] == 'UNKNOWN'
+			|| (TSCommon::$certificates[$lang]['stateEnum'] !== 'INTEGRATION'
+				&& TSCommon::$certificates[$lang]['stateEnum'] !== 'PRODUCTION'
+				&& TSCommon::$certificates[$lang]['stateEnum'] !== 'TEST'))
 			return '';
 
 		// If login parameters missing for the certificate an error occurred
-		if ((TSCommon::$certificates[$lang]['user'] == '' || TSCommon::$certificates[$lang]['password'] == '') && TSCommon::$certificates[$lang]['typeEnum'] == 'EXCELLENCE')
+		if ((TSCommon::$certificates[$lang]['user'] == ''
+			|| TSCommon::$certificates[$lang]['password'] == '')
+			&& TSCommon::$certificates[$lang]['typeEnum'] == 'EXCELLENCE')
 			return '';
-
 
 		// Set default value for an unexisting item
 		TSCommon::$smarty->assign('item_exist', false);
@@ -1499,42 +1526,49 @@ class TSCommon extends AbsTrustedShops
 		AND `ts_id` ="'.pSQL(TSCommon::$certificates[$lang]['tsID']).'"
 		AND `currency` = "'.pSQL($currency->iso_code).'"';
 
-		if (!($item = Db::getInstance()->getRow($query)))
-			return '';
-
 		$customer = new Customer($params['objOrder']->id_customer);
-		$payment_module = Module::getInstanceByName($params['objOrder']->module);
-		$arr_params = array();
+			$payment_module = Module::getInstanceByName($params['objOrder']->module);
+			$arr_params = array();
 
-		$arr_params['paymentType'] = '';
-		foreach (TSCommon::$certificates[$lang]['payment_type'] as $payment_type => $id_modules)
-			if (in_array($payment_module->id, $id_modules))
-			{
-				$arr_params['paymentType'] = (string)$payment_type;
-				break;
-			}
+			$arr_params['paymentType'] = '';
+			foreach (TSCommon::$certificates[$lang]['payment_type'] as $payment_type => $id_modules)
+				if (in_array($payment_module->id, $id_modules))
+				{
+					$arr_params['paymentType'] = (string)$payment_type;
+					break;
+				}
 
-		if ($arr_params['paymentType'] == '')
-			$arr_params['paymentType'] = 'OTHER';
+			if ($arr_params['paymentType'] == '')
+				$arr_params['paymentType'] = 'OTHER';
 
-		$arr_params['tsID'] = TSCommon::$certificates[$lang]['tsID'];
-		$arr_params['tsProductID'] = $item['ts_product_id'];
-		$arr_params['amount'] = $params['total_to_pay'];
-		$arr_params['currency'] = $currency->iso_code;
-		$arr_params['buyerEmail'] = $customer->email;
-		$arr_params['shopCustomerID'] = $customer->id;
-		$arr_params['shopOrderID'] = Order::getUniqReferenceOf($params['objOrder']->id);
-		$arr_params['orderDate'] = date('Y-m-d\TH:i:s', strtotime($params['objOrder']->date_add));
-		$arr_params['shopSystemVersion'] = 'Prestashop '._PS_VERSION_;
-		$arr_params['wsUser'] = TSCommon::$certificates[$lang]['user'];
-		$arr_params['wsPassword'] = TSCommon::$certificates[$lang]['password'];
+			$arr_params['tsID'] = TSCommon::$certificates[$lang]['tsID'];
 
-		$this->requestForProtectionV2($arr_params);
+			$arr_params['amount'] = $params['total_to_pay'];
+			$arr_params['currency'] = $currency->iso_code;
+			$arr_params['buyerEmail'] = $customer->email;
+			$arr_params['shopCustomerID'] = $customer->id;
+			$arr_params['shopOrderID'] = Order::getUniqReferenceOf($params['objOrder']->id);
+			$arr_params['orderDate'] = date('Y-m-d\TH:i:s', strtotime($params['objOrder']->date_add));
+			$arr_params['shopSystemVersion'] = 'Prestashop '._PS_VERSION_;
+			$arr_params['wsUser'] = TSCommon::$certificates[$lang]['user'];
+			$arr_params['wsPassword'] = TSCommon::$certificates[$lang]['password'];
+
+		if (($item = Db::getInstance()->getRow($query)))
+		{
+			$arr_params['tsProductID'] = $item['ts_product_id'];
+			$this->requestForProtectionV2($arr_params);
+		}
 
 		if (!empty($this->errors))
 			return '<p style="color:red">'.implode('<br />', $this->errors).'</p>';
 
-		return '';
+		TSCommon::$smarty->assign(
+			array(
+				'buyer_protection' => $arr_params
+			)
+		);
+
+		return $this->display(TSCommon::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation-tsbp-excellence'));
 	}
 
 	/**
@@ -1610,7 +1644,7 @@ class TSCommon extends AbsTrustedShops
 			'currency' => $currency->iso_code,
 			'customer_id' => $customer->id,
 			'order_id' => $params['objOrder']->id,
-			'order_reference' => Order::getUniqReferenceOf($params['objOrder']->id),			
+			'order_reference' => Order::getUniqReferenceOf($params['objOrder']->id),
 			'payment_type' => $payment_type,
 			'shop_id' => TSCommon::$certificates[$lang]['tsID']
 		);
@@ -1644,40 +1678,42 @@ class TSCommon extends AbsTrustedShops
 		if (!isset(TSCommon::$certificates[$lang]) || !count(TSCommon::$certificates[$lang]))
 			$out .= '';
 
-		if (((isset(TSCommon::$certificates[$lang]['typeEnum'])) && (TSCommon::$certificates[$lang]['typeEnum'] == 'EXCELLENCE') &&
-			TSCommon::$certificates[$lang]['user'] != '' &&
-			TSCommon::$certificates[$lang]['password'] != ''))
+		if (((isset(TSCommon::$certificates[$lang]['typeEnum']))
+			&& (TSCommon::$certificates[$lang]['typeEnum'] == 'EXCELLENCE')
+			&& TSCommon::$certificates[$lang]['user'] != ''
+			&& TSCommon::$certificates[$lang]['password'] != ''))
 		{
-            if (TSCommon::$certificates[$lang]['display_rating_oc'] == 1)
-            {
-                self::$smarty->assign(array(
-                        'ratenow_url' => $this->getRatenowUrl($lang, (int)$params['objOrder']->id),
-                        'ratelater_url' => $this->getRatelaterUrl($lang, (int)$params['objOrder']->id),
-                        'img_rateshopnow' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_now_'.Tools::strtolower($lang).'_190.png',
-                        'img_rateshoplater' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_later_'.Tools::strtolower($lang).'_190.png',
-                    )
-                );
-                $out .= $this->display(self::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation'));
-            }
+			if (TSCommon::$certificates[$lang]['display_rating_oc'] == 1)
+			{
+				self::$smarty->assign(array(
+						'ratenow_url' => $this->getRatenowUrl($lang, (int)$params['objOrder']->id),
+						'ratelater_url' => $this->getRatelaterUrl($lang, (int)$params['objOrder']->id),
+						'img_rateshopnow' => _MODULE_DIR_.'trustedshops/views/img/'.Tools::strtoupper($lang).'/rate_now_'.Tools::strtolower($lang).'_190.png',
+						'img_rateshoplater' => _MODULE_DIR_.'trustedshops/views/img/'.Tools::strtoupper($lang).'/rate_later_'.Tools::strtolower($lang).'_190.png',
+					)
+				);
+				$out .= $this->display(self::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation'));
+			}
 			$out .= $this->orderConfirmationExcellence($params, $lang);
 		}
-		else if ((isset(TSCommon::$certificates[$lang]['typeEnum'])) &&
-			(TSCommon::$certificates[$lang]['typeEnum'] == 'CLASSIC' || TSCommon::$certificates[$lang]['typeEnum'] == 'UNKNOWN') &&
-			(TSCommon::$certificates[$lang]['stateEnum'] == 'INTEGRATION' ||
-				TSCommon::$certificates[$lang]['stateEnum'] == 'PRODUCTION' ||
-				TSCommon::$certificates[$lang]['stateEnum'] == 'TEST'))
+		else if ((isset(TSCommon::$certificates[$lang]['typeEnum']))
+			&& (TSCommon::$certificates[$lang]['typeEnum'] == 'CLASSIC'
+				|| TSCommon::$certificates[$lang]['typeEnum'] == 'UNKNOWN')
+			&& (TSCommon::$certificates[$lang]['stateEnum'] == 'INTEGRATION'
+				|| TSCommon::$certificates[$lang]['stateEnum'] == 'PRODUCTION'
+				|| TSCommon::$certificates[$lang]['stateEnum'] == 'TEST'))
 		{
-            if (TSCommon::$certificates[$lang]['display_rating_oc'] == 1)
-            {
-                self::$smarty->assign(array(
-                        'ratenow_url' => $this->getRatenowUrl($lang, (int)$params['objOrder']->id),
-                        'ratelater_url' => $this->getRatelaterUrl($lang, (int)$params['objOrder']->id),
-                        'img_rateshopnow' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_now_'.Tools::strtolower($lang).'_190.png',
-                        'img_rateshoplater' => _MODULE_DIR_.'trustedshops/img/'.Tools::strtoupper($lang).'/rate_later_'.Tools::strtolower($lang).'_190.png',
-                    )
-                );
-                $out .= $this->display(self::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation'));
-            }
+			if (TSCommon::$certificates[$lang]['display_rating_oc'] == 1)
+			{
+				self::$smarty->assign(array(
+						'ratenow_url' => $this->getRatenowUrl($lang, (int)$params['objOrder']->id),
+						'ratelater_url' => $this->getRatelaterUrl($lang, (int)$params['objOrder']->id),
+						'img_rateshopnow' => _MODULE_DIR_.'trustedshops/views/img/'.Tools::strtoupper($lang).'/rate_now_'.Tools::strtolower($lang).'_190.png',
+						'img_rateshoplater' => _MODULE_DIR_.'trustedshops/views/img/'.Tools::strtoupper($lang).'/rate_later_'.Tools::strtolower($lang).'_190.png',
+					)
+				);
+				$out .= $this->display(self::$module_name, '/views/templates/front/'.self::getTemplateByVersion('order-confirmation'));
+			}
 			$out .= $this->orderConfirmationClassic($params, $lang);
 		}
 		return $out;
@@ -1735,10 +1771,12 @@ class TSCommon extends AbsTrustedShops
 			switch ($result)
 			{
 				case TrustedShopsSoapApi::RT_INVALID_TSID:
-					$this->error_soap_call = $this->l('Invalid Trusted Shops ID').' ['.Language::getIsoById($iso_lang).']. '.$this->l('Please register').' <a href="'.$this->getApplyUrl().'">'.$this->l('here').'</a> '.$this->l('or contact service@trustedshops.co.uk.');
+					$this->error_soap_call = $this->l('Invalid Trusted Shops ID').' ['.Language::getIsoById($iso_lang).']. '.$this->l('Please register').
+						' <a href="'.$this->getApplyUrl().'">'.$this->l('here').'</a> '.$this->l('or contact service@trustedshops.co.uk.');
 					break;
 				case TrustedShopsSoapApi::RT_NOT_REGISTERED:
-					$this->error_soap_call = $this->l('Customer Rating has not yet been activated for this Trusted Shops ID').' ['.Language::getIsoById($iso_lang).']. '.$this->l('Please register').' <a href="'.$this->getApplyUrl().'">'.$this->l('here').'</a> '.$this->l('or contact service@trustedshops.co.uk.');
+					$this->error_soap_call = $this->l('Customer Rating has not yet been activated for this Trusted Shops ID').' ['.Language::getIsoById($iso_lang).']. '.
+						$this->l('Please register').' <a href="'.$this->getApplyUrl().'">'.$this->l('here').'</a> '.$this->l('or contact service@trustedshops.co.uk.');
 					break;
 				default:
 					$this->error_soap_call = $this->l('An error has occurred');
@@ -1757,7 +1795,7 @@ class TSCommon extends AbsTrustedShops
 		$context = Context::getContext();
 
 		$lang = $this->getAllowedIsobyId($context->language->id);
-		
+
 		$params = array(
 			'partnerPackage' => self::PARTNER_PACKAGE,
 			'shopsw'         => self::SHOP_SW,
@@ -1768,19 +1806,17 @@ class TSCommon extends AbsTrustedShops
 			'language'       => Tools::strtoupper(Language::getIsoById((int)$context->language->id)),
 			'ratingProduct'  => 'RATING_PRO'
 		);
-		
+
 		$link = $this->apply_url_base[$lang];
-		
 		$i = 0;
-		
+
 		foreach ($params as $p => $v)
 		{
-			$link.= ($i == 0 ? '?' : '&').$p.'='.$v;
-			
+			$link .= ($i == 0 ? '?' : '&').$p.'='.$v;
 			$i++;
 		}
-		
-		$link.= $this->apply_url_tracker[$lang];
+
+		$link .= $this->apply_url_tracker[$lang];
 
 		return $link;
 	}
@@ -1788,7 +1824,7 @@ class TSCommon extends AbsTrustedShops
 	public function getRatenowUrl($iso_cert, $id_order = '')
 	{
 		$context = Context::getContext();
-		
+
 		$buyer_email = '';
 
 		if ($context->customer->isLogged())
@@ -1813,7 +1849,7 @@ class TSCommon extends AbsTrustedShops
 
 			$buyer_email = Context::getContext()->cookie->email;
 		}
-		
+
 		$params = array(
 			'shop_id'     => TSCommon::$certificates[$iso_cert]['tsID'],
 			'buyerEmail'  => urlencode(base64_encode($buyer_email)),
@@ -1821,15 +1857,13 @@ class TSCommon extends AbsTrustedShops
 			'orderDate'   => urlencode(base64_encode(date('Y-m-d H:i:s'))),
 			'days'        => 10
 		);
-		
+
 		$link = 'http://www.trustedshops.com/reviews/rateshoplater.php';
-		
 		$i = 0;
-		
+
 		foreach ($params as $p => $v)
 		{
-			$link.= ($i == 0 ? '?' : '&').$p.'='.$v;
-			
+			$link .= ($i == 0 ? '?' : '&').$p.'='.$v;
 			$i++;
 		}
 
@@ -1839,71 +1873,17 @@ class TSCommon extends AbsTrustedShops
 	public function getRatingUrlWithBuyerEmail($id_lang, $iso_cert, $id_order = '', $buyer_email = '')
 	{
 		$language = Tools::strtoupper(Language::getIsoById((int)$id_lang));
-		
-		if (isset($this->rating_url_base[$language]) && isset(TSCommon::$certificates[$iso_cert])) {
+
+		if (isset($this->rating_url_base[$language]) && isset(TSCommon::$certificates[$iso_cert]))
+		{
 			$base_url = $this->rating_url_base[$language].TSCommon::$certificates[$iso_cert]['tsID'].'.html';
-	
+
 			if (!empty($buyer_email))
-				$base_url .= '&buyerEmail='.urlencode(base64_encode($buyer_email)).($id_order ? '&shopOrderID='.urlencode(base64_encode((int)$id_order)) : '').'&orderDate='.urlencode(base64_encode(date('Y-m-d H:i:s')));
-	
+				$base_url .= '&buyerEmail='.urlencode(base64_encode($buyer_email)).($id_order ? '&shopOrderID='.
+					urlencode(base64_encode((int)$id_order)) : '').'&orderDate='.urlencode(base64_encode(date('Y-m-d H:i:s')));
+
 			return $base_url;
 		}
-	}
-
-	public function hookLeftColumn($params)
-	{
-		$context = Context::getContext();
-
-
-		if (isset($context->language) && is_object($context->language))
-			$id_lang = (int)$context->language->id;
-		else if (Tools::getValue('id_lang'))
-			$id_lang = (int)Tools::getValue('id_lang');
-		else
-			$id_lang = (int)Configuration::get('PS_LANG_DEFAULT');
-
-		$iso_lang = $iso_cert = Language::getIsoById((int)$id_lang);
-
-		$tab_id = false;
-
-		if (isset(TSCommon::$certificates[Tools::strtoupper($iso_cert)]['tsID']))
-			$tab_id = TSCommon::$certificates[Tools::strtoupper($iso_cert)]['tsID'];
-
-		if (!$tab_id)
-			return false;
-
-		$display_in_shop = 1;
-		$display_rating_frontend = TSCommon::$certificates[Tools::strtoupper($iso_cert)]['display_rating_front_end'];
-
-		self::$smarty->assign('display_widget', $display_in_shop);
-
-		if ($display_in_shop)
-		{
-			$filename = $this->getWidgetFilename(Tools::strtoupper($iso_cert));
-			$cache = new WidgetCache(_PS_MODULE_DIR_.$filename, $tab_id);
-
-			if (!$cache->isFresh())
-				$cache->refresh();
-
-			if (file_exists(_PS_MODULE_DIR_.$filename))
-				self::$smarty->assign(array('ts_id' => $tab_id, 'filename' => _MODULE_DIR_.$filename));
-		}
-
-		self::$smarty->assign('display_rating_link', (int)$display_rating_frontend);
-
-		if ($display_rating_frontend)
-			self::$smarty->assign(array('rating_url' => $this->getRatenowUrl($iso_cert), 'language' => $iso_lang));
-
-		if (TSCommon::$certificates[Tools::strtoupper($iso_cert)])
-			return $this->display(self::$module_name, 'views/templates/front/'.self::getTemplateByVersion('widget'));
-
-		return '';
-	}
-
-
-	public function getWidgetFilename($iso_cert)
-	{
-		return self::$module_name.'/cache/'.TSCommon::$certificates[$iso_cert]['tsID'].'.gif';
 	}
 
 	public function getTempWidgetFilename($ts_id)

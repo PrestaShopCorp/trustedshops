@@ -15,18 +15,31 @@
 * @copyright 2014 silbersaiten
 * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 *}
+{if !empty($jscode)}
+{$jscode}
+{else}
 <script type="text/javascript">
     (function () {
-        var _tsid = '{$trusted_shops_id|escape}';
+        var _tsid = '{$trusted_shops_id|escape:'html':'UTF-8'}';
         _tsConfig = {
-            'yOffset': '0', //offset from page bottom
-            'variant': '{$variant|escape}' //text, default, small, reviews
+            'yOffset': '{$yoffset|escape:'html':'UTF-8'}', /* offset from page bottom */
+            'variant': '{$variant|escape:'html':'UTF-8'}', /* text, default, small, reviews, custom, custom_reviews */
+            'customElementId': '', /* required for variants custom and custom_reviews */
+            'trustcardDirection': '', /* for custom variants: topRight, topLeft, bottomRight, bottomLeft */
+            'customBadgeWidth': '', /* for custom variants: 40 - 90 (in pixels) */
+            'customBadgeHeight': '', /* for custom variants: 40 - 90 (in pixels) */
+            'disableResponsive': 'false', /* deactivate responsive behaviour */
+            'disableTrustbadge': 'false' /* deactivate trustbadge */
         };
+
         var _ts = document.createElement('script');
         _ts.type = 'text/javascript';
         _ts.charset = 'utf-8';
+        _ts.async = true;
         _ts.src = '//widgets.trustedshops.com/js/' + _tsid + '.js';
         var __ts = document.getElementsByTagName('script')[0];
         __ts.parentNode.insertBefore(_ts, __ts);
+
     })();
 </script>
+{/if}

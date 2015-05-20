@@ -60,15 +60,15 @@
     <div class="box">
         <h3 class="page-subheading">{l s='Trusted Shops Buyer Protection (recommended)' mod='trustedshops'}</h3>
         <div style="float:left; width:100px;">
-            <a href="https://www.trustedshops.com/shop/certificate.php?shop_id={$shop_id|escape}" target="_blank">
+            <a href="https://www.trustedshops.com/shop/certificate.php?shop_id={$shop_id|escape:'html':'UTF-8'}" target="_blank">
                 <img id="logo_trusted" style="margin:2px 0 10px 10px" alt="logo"
-                     src="{$module_dir|escape}img/siegel.gif" border="0"/>
+                     src="{$module_dir|escape:'html':'UTF-8'}views/img/siegel.gif" border="0"/>
             </a>
         </div>
         <div id="ts-list-items">
             <p style="margin-bottom: 10px;">
-                <input id="ts-product-{$buyer_protection_item.id_product|escape}" type="checkbox"
-                       value="{$buyer_protection_item.id_product|escape}" name="item_product">
+                <input id="ts-product-{$buyer_protection_item.id_product|escape:'html':'UTF-8'}" type="checkbox"
+                       value="{$buyer_protection_item.id_product|escape:'html':'UTF-8'}" name="item_product">
                 {l s='Buyer protection up to' mod='trustedshops'} {$buyer_protection_item.protected_amount_decimal|round:2}{$currency->sign}
                 ({$buyer_protection_item.gross_fee|round:2}{$currency->sign} {l s='incl. VAT' mod='trustedshops'})
             </p>
@@ -77,10 +77,10 @@
                 <p>
                     {l s='The Trusted Shops Buyer Protection secures your online purchase. I agree to my email address being transferred and' mod='trustedshops'}
                     <b>
-                        <a href="http://www.trustedshops.com/shop/data_privacy.php?shop_id={$shop_id|escape}"
+                        <a href="http://www.trustedshops.com/shop/data_privacy.php?shop_id={$shop_id|escape:'html':'UTF-8'}"
                            target="_blank">{l s='saved' mod='trustedshops'}</a></b>
                     {l s='for the purposes of Buyer Protection processing by Trusted Shops.' mod='trustedshops'} <b>
-                        <a href="http://www.trustedshops.com/shop/protection_conditions.php?shop_id={$shop_id|escape}"
+                        <a href="http://www.trustedshops.com/shop/protection_conditions.php?shop_id={$shop_id|escape:'html':'UTF-8'}"
                            target="_blank">{l s='Conditions' mod='trustedshops'}</a></b>
                     {l s='for Buyer Protection.' mod='trustedshops'}</p></div>
         </div>

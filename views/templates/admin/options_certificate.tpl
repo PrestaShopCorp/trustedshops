@@ -32,7 +32,7 @@
     {rdelim}
 </script>
 
-<form action="{$form_action|escape:'html':'UTF-8'}" class="form-horizontal" method="post" >
+<form action="{$form_action|escape:'html':'UTF-8'}" class="form-horizontal" method="post">
     <div class="panel">
 	<div class="panel-heading">{l s='Edit options' mod='trustedshops'}</div>
 	<div class="form-wrapper">
@@ -40,17 +40,17 @@
 	    
 	    <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Language' mod='trustedshops'}</label>
-                <div class="col-lg-4">{$lang|escape:'html':'UTF-8'}</div>
+                <div class="col-lg-4"><output class="ts-text">{$lang|escape:'html':'UTF-8'}</output></div>
 	    </div>
 	    
 	    <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Shop url' mod='trustedshops'}</label>
-		<div class="col-lg-4">{$certificate.url|escape:'html':'UTF-8'}</div>
+		<div class="col-lg-4"><output class="ts-text">{$certificate.url|escape:'html':'UTF-8'}</output></div>
 	    </div>
 	    
 	    <div class="form-group">
-                <label class="control-label col-lg-3">{l s='Certificate id' mod='trustedshops'}</label>
-		<div class="col-lg-4">{$certificate.tsID|escape:'html':'UTF-8'}</div>
+                <label class="control-label col-lg-3">{l s='Trusted Shops ID' mod='trustedshops'}</label>
+		<div class="col-lg-4"><output class="ts-text">{$certificate.tsID|escape:'html':'UTF-8'}</output></div>
 	    </div>
 	    
 	    <div class="form-group">
@@ -58,56 +58,30 @@
 	    </div>
 	    
 	    <div class="form-group">
-                <label class="control-label col-lg-3">{l s='Variant' mod='trustedshops'}</label>
-		<div class="col-lg-4">
-		    <select name="variant">
-			{foreach from=$available_seal_variants item=v key=k}
-			    <option value="{$k|escape:'html':'UTF-8'}" {if $certificate.variant == $k}selected="selected"{/if}>{$v|escape:'html':'UTF-8'}</option>
-			{/foreach}
-		    </select>
+            <label class="control-label col-lg-3">{l s='Variant' mod='trustedshops'}</label>
+			<div class="col-lg-4">
+			    <select name="variant">
+				{foreach from=$available_seal_variants item=v key=k}
+				    <option value="{$k|escape:'html':'UTF-8'}" {if $certificate.variant == $k}selected="selected"{/if}>{$v|escape:'html':'UTF-8'}</option>
+				{/foreach}
+			    </select>
+			</div>
+	    </div>
+
+	    <div class="form-group">
+			<label class="control-label col-lg-3">{l s='yOffset' mod='trustedshops'}</label>
+			<div class="col-lg-4">
+			    <input type="text" name="yoffset" value="{$yoffset|escape:'html':'UTF-8'}" maxlength="33"/>
+			</div>
 		</div>
-	    </div>
-	    
-	    <div class="form-group">
-		<div class="col-lg-offset-1"><strong>{l s='Trusted Shops Customer Rating' mod='trustedshops'}</strong></div>
-	    </div>
-	    
-	    <div class="form-group">
-		<div class="col-lg-offset-1">{l s='Start collecting 100% real customer ratings now! Integrate rating request and rating widget in your shop and show honest interest in you customer\'s opinions.' mod='trustedshops'}</div>
-	    </div>
-	    
-	    <div class="form-group">
-		<label class="control-label col-lg-3">{l s='Display rating link in shop front-end' mod='trustedshops'}</label>
-		<div class="col-lg-4">
-		    <input type="checkbox" name="display_rating_front_end" value="1" {if isset($certificate.display_rating_front_end) && $certificate.display_rating_front_end}checked="checked"{/if} />
-		</div>
-            </div>
-	    
-	    <div class="form-group">
-		<label class="control-label col-lg-3">{l s='Display rating link on order confirmation page' mod='trustedshops'}</label>
-		<div class="col-lg-4">
-		    <input type="checkbox" name="display_rating_oc" value="1" {if isset($certificate.display_rating_oc) && $certificate.display_rating_oc}checked="checked"{/if} />
-		</div>
-	    </div>
-	    
-	    <div class="form-group">
-		<label class="control-label col-lg-3">{l s='Send rating link in separate e-mail' mod='trustedshops'}</label>
-		<div class="col-lg-4">
-		    <input onclick="toggleSendMailInfos()" type="checkbox" name="send_separate_mail" value="1" {if isset($certificate.send_separate_mail) && $certificate.send_separate_mail}checked="checked"{/if} /> <br />
-		    <div id="send_seperate_mail_infos">
-		    {l s='Send the email after' mod='trustedshops'}
-		    <input class="" size="2" type="text" name="send_seperate_mail_delay" value="{if isset($certificate.send_seperate_mail_delay)}{$certificate.send_seperate_mail_delay|escape:'html':'UTF-8'}{/if}" />
-		    {l s='days' mod='trustedshops'} {l s='of setting order to state' mod='trustedshops'}
-		    <select name="send_seperate_mail_order_state">
-			{foreach from=$order_states item=order_state}
-			<option value="{$order_state.id_order_state|escape:'intval':'UTF-8'}" {if isset($certificate.send_seperate_mail_order_state) && $order_state.id_order_state == $certificate.send_seperate_mail_order_state}selected="selected"{/if}>{$order_state.name|escape:'html':'UTF-8'}</option>
-			{/foreach}
-		    </select>
-		    <span style="color: #CC0000; font-weight: bold;">{l s='IMPORTANT:' mod='trustedshops'}</span> {l s='Put this URL in crontab or call it manually daily:' mod='trustedshops'}<br />
-		    {$cron_link|escape:'html':'UTF-8'}
-		    </div>
-		</div>
-	    </div>
+
+		<div class="form-group">
+			<label class="control-label col-lg-3">{l s='JS Code' mod='trustedshops'}</label>
+			<div class="col-lg-4">
+				<textarea name="jscode" rows="10" id="social-text">{$jscode|escape:'html':'UTF-8'}</textarea>
+				<p class="help-block">{l s='This code is displayed (if the field is not empty) instead of the standard badge' mod='trustedshops'}</p>
+			</div>
+		</div>		
 	</div>
     </div>
     <p style="text-align:center;">
