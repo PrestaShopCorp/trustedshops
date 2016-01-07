@@ -49,7 +49,7 @@ class TrustedShops extends Module
 	{
 		$this->name = 'trustedshops';
 		$this->tab = 'advertising_marketing';
-		$this->version = '2.3.1';
+		$this->version = '2.3.2';
 		$this->author = 'silbersaiten';
 		$this->bootstrap = true;
 
