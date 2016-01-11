@@ -49,7 +49,7 @@ class TrustedShops extends Module
 	{
 		$this->name = 'trustedshops';
 		$this->tab = 'advertising_marketing';
-		$this->version = '2.3.1';
+		$this->version = '2.3.2';
 		$this->author = 'silbersaiten';
 		$this->bootstrap = true;
 
@@ -123,13 +123,13 @@ class TrustedShops extends Module
 		switch (Tools::strtolower(Language::getIsoById((int)$this->context->cookie->id_lang)))
 		{
 			case 'de':
-				$applynow_link = 'http://www.trustedshops.de/shopbetreiber/index.html?a_aid=546a2b2c79731&etcc_med=link&etcc_cmp=back&etcc_par=sofpar&etcc_ctv=prestashop&etcc_tar=sales';
+				$applynow_link = 'http://www.trustbadge.com/prestashop/?utm_source=prestashop&utm_medium=software-app&utm_content=app-config&utm_campaign=prestashop-app&l=de';
 				break;
 			case 'es':
 				$applynow_link = 'https://www.trustedshops.es/comerciante/?a_aid=546a2b2c79731';
 				break;
 			case 'fr':
-				$applynow_link = 'https://www.trustedshops.fr/inscription/?a_aid=546a2b2c79731&utm_source=par&utm_medium=links&utm_content=presta_modul&utm_campaign=pricing';
+				$applynow_link = 'http://www.trustbadge.com/prestashop/?utm_source=prestashop&utm_medium=software-app&utm_content=app-config&utm_campaign=prestashop-app&l=fr';
 				break;
 			case 'pl':
 				$applynow_link = 'https://www.trustedshops.pl/handlowcy/?a_aid=546a2b2c79731';
@@ -141,7 +141,7 @@ class TrustedShops extends Module
 				$applynow_link = 'http://www.trustedshops.nl/registreer/?a_aid=546a2b2c79731?utm_source=par&utm_medium=links&utm_content=presta_backend&utm_campaign=pricing';
 				break;
 			default:
-				$applynow_link = 'https://www.trustedshops.co.uk/signup/?a_aid=546a2b2c79731&utm_source=par&utm_medium=links&utm_content=presta_modul&utm_campaign=pricing';
+				$applynow_link = 'http://www.trustbadge.com/prestashop/?utm_source=prestashop&utm_medium=software-app&utm_content=app-config&utm_campaign=prestashop-app&l=en';
 		}
 
 		$this->smarty->assign(array(

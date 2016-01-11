@@ -2,7 +2,7 @@
 <module>
 	<name>trustedshops</name>
 	<displayName><![CDATA[Trusted Shops Customer Reviews]]></displayName>
-	<version><![CDATA[2.3.1]]></version>
+	<version><![CDATA[2.3.2]]></version>
 	<description><![CDATA[Easily collect, show and manage real customer reviews. Integrate the TrustedShops Trustbadge® within minutes and display trust at first glance.]]></description>
 	<author><![CDATA[silbersaiten]]></author>
 	<tab><![CDATA[advertising_marketing]]></tab>
